@@ -1,0 +1,2928 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f7f9fc">
+    <link rel="icon" type="image/svg+xml" href="assets/verifier.svg">
+
+    <!-- ==================================================================== -->
+    <!--  SITE CONFIG — everything not yet known about this survey lives here. -->
+    <!--                                                                      -->
+    <!--  Fill a value in and the page wires it up everywhere. Leave it as ""  -->
+    <!--  (or []) and the page degrades on its own: links become disabled      -->
+    <!--  chips, whole rows disappear, BibTeX drops the line, and the amber    -->
+    <!--  setup notice at the top lists what is still missing. Nothing here    -->
+    <!--  is required for the page to render correctly.                        -->
+    <!--                                                                      -->
+    <!--  Set showSetupNotice to false before publishing if you would rather   -->
+    <!--  ship with blanks than show the checklist.                            -->
+    <!-- ==================================================================== -->
+    <script>
+      const SITE = {
+        /* ---- where the paper lives -------------------------------------- */
+        arxivId:        "",   // e.g. "2608.01234"  -> drives the arXiv button and citation_arxiv_id
+        arxivUrl:       "",   // leave "" to derive from arxivId
+        paperPdfUrl:    "",   // e.g. "No_Free_Checker.pdf" once the PDF is committed here
+        openReviewUrl:  "",   // e.g. "https://openreview.net/forum?id=..."
+        huggingFaceUrl: "",   // e.g. "https://huggingface.co/papers/2608.01234"
+
+        /* ---- where this repo and this page live ------------------------- */
+        repoUrl:        "https://github.com/ZJUSCL/Awesome-Robot-Verifier",
+        siteUrl:        "https://zjuscl.github.io/Awesome-Robot-Verifier/",
+        projectPageUrl: "",   // a separate project page, if there is one
+
+        /* ---- publication metadata (Google Scholar / Highwire tags) ------- */
+        venue:            "",   // e.g. "arXiv preprint arXiv:2608.01234"
+        publicationDate:  "",   // "YYYY/MM/DD"
+        bibKey:           "wan2026nofreechecker",
+
+        /* ---- people ------------------------------------------------------ */
+        // Homepage per author. Any name left out simply renders as plain text.
+        authorLinks: {
+          // "Yang Wan": "https://...",
+        },
+        // Shown in the About card. Empty array hides the whole contact block.
+        contactEmails: [
+          // "someone@zju.edu.cn",
+        ],
+
+        /* ---- announcement posts (empty array hides the row) --------------- */
+        socials: [
+          // { kind: "x",   label: "X / Twitter", url: "https://x.com/..." },
+          // { kind: "xhs", label: "Xiaohongshu", url: "https://..." },
+        ],
+
+        /* ---- assets ------------------------------------------------------ */
+        ogImage: "assets/teaser.png",
+
+        /* ---- behaviour ---------------------------------------------------- */
+        showSetupNotice: true
+      };
+
+      // Fields the setup notice reports on, and what each one unlocks.
+      const SITE_REQUIRED = [
+        ["repoUrl",       "GitHub button, reading-list links, “Copy repo URL”"],
+        ["siteUrl",       "canonical URL and social preview cards"],
+        ["arxivId",       "arXiv button, BibTeX eprint, Scholar metadata"],
+        ["paperPdfUrl",   "“Paper (PDF)” button and citation_pdf_url"],
+        ["venue",         "BibTeX journal field and Scholar metadata"],
+        ["publicationDate", "Scholar publication date"],
+        ["contactEmails", "contact block in the About section"]
+      ];
+    </script>
+
+    <meta
+      name="description"
+      content="No Free Checker: a survey of verifiers for robot policies. Four judge sources, and the trade between how available a verification signal is and how much a high score tells you about the task."
+    >
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="No Free Checker: A Survey of Verifiers for Robot Policies">
+    <meta
+      property="og:description"
+      content="Who supplies the judgment, what the judgment is worth, and what it takes to check the checker."
+    >
+    <meta name="twitter:card" content="summary_large_image">
+    <title>No Free Checker: A Survey of Verifiers for Robot Policies</title>
+
+    <!-- Google Scholar (Highwire Press) bibliographic metadata. URL-bearing tags
+         are injected by applySiteConfig() only when SITE supplies a value. -->
+    <meta name="citation_title" content="No Free Checker: A Survey of Verifiers for Robot Policies">
+    <meta name="citation_author" content="Wan, Yang">
+    <meta name="citation_author" content="Yue, Xihang">
+    <meta name="citation_author" content="Liu, Zhirui">
+    <meta name="citation_author" content="Chu, Ziyuan">
+    <meta name="citation_author" content="Wang, Shuxun">
+    <meta name="citation_author" content="Chen, Yuhan">
+    <meta name="citation_author" content="Jiang, Xiaonan">
+    <meta name="citation_author" content="Dong, Yubo">
+    <meta name="citation_author" content="Zhu, Linchao">
+    <meta name="citation_language" content="en">
+    <meta
+      name="citation_keywords"
+      content="robot policy verification; robot learning; policy evaluation; reward models; verifier; success detection"
+    >
+
+    <script>document.documentElement.classList.add("js");</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;700&amp;family=Sora:wght@600;700;800&amp;display=swap"
+      rel="stylesheet"
+    >
+    <style>
+:root {
+  --bg: #f7f9fc;
+  --bg-2: #eef3fa;
+  --surface: #ffffff;
+  --surface-soft: rgba(255, 255, 255, 0.74);
+  --ink: #10203c;
+  --ink-2: #26364f;
+  --muted: #5d6b80;
+  --line: #e0e7f1;
+  --brand: #1b4079;
+  --brand-2: #235393;
+  --brand-3: #122c55;
+  --brand-soft: #e6eefa;
+  --accent: #e08a1e;
+  --accent-soft: #fdf1de;
+  --green: #2f7d5a;
+  --green-soft: #e4f2ea;
+  --fam-human: #5b7fb9;
+  --fam-rules: #1b4079;
+  --fam-learned: #2b8ca6;
+  --fam-intrinsic: #e08a1e;
+  --shadow-sm: 0 1px 2px rgba(16, 32, 60, 0.05), 0 5px 16px rgba(16, 32, 60, 0.05);
+  --shadow-md: 0 10px 32px rgba(16, 32, 60, 0.09);
+  --shadow-lg: 0 28px 70px rgba(16, 32, 60, 0.15);
+  --gradient: linear-gradient(120deg, #2f77c2 0%, #1b4079 58%, #122c55 100%);
+  --radius: 20px;
+  --max-width: 1160px;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 76px;
+}
+
+body {
+  margin: 0;
+  overflow-x: clip;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.menu-open,
+body.lightbox-open { overflow: hidden; }
+
+a { color: var(--brand-2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid rgba(27, 64, 121, 0.3);
+  outline-offset: 3px;
+}
+
+button, input { font: inherit; }
+img { display: block; max-width: 100%; }
+
+h1, h2, h3, h4,
+.section-title,
+.brand-name { font-family: "Sora", "Inter", sans-serif; }
+
+.wrap {
+  width: min(100% - 48px, var(--max-width));
+  margin-inline: auto;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px; left: 16px;
+  z-index: 1000;
+  padding: 9px 14px;
+  transform: translateY(-160%);
+  border-radius: 9px;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 800;
+  transition: transform 0.15s ease;
+}
+.skip-link:focus { transform: none; text-decoration: none; }
+
+/* ---------------------------------------------------------------- setup notice */
+.setup-notice {
+  position: relative;
+  z-index: 120;
+  border-bottom: 1px solid #f0d9a8;
+  background: #fdf6e6;
+  color: #6c4a05;
+  font-size: 13.5px;
+}
+.setup-notice[hidden] { display: none; }
+.setup-notice-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: min(100% - 48px, var(--max-width));
+  margin-inline: auto;
+  padding: 11px 0;
+}
+.setup-notice strong { font-weight: 800; }
+.setup-notice ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+}
+.setup-notice li { margin: 1px 0; }
+.setup-notice code {
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: rgba(108, 74, 5, 0.1);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px;
+}
+.setup-notice-close {
+  margin-left: auto;
+  flex: 0 0 auto;
+  padding: 3px 9px;
+  border: 1px solid rgba(108, 74, 5, 0.3);
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+.setup-notice-close:hover { background: rgba(108, 74, 5, 0.08); }
+
+/* ---------------------------------------------------------------- navigation */
+.reading-progress {
+  position: fixed;
+  z-index: 260;
+  top: 0; right: 0; left: 0;
+  height: 3px;
+  background: transparent;
+  pointer-events: none;
+}
+.reading-progress-bar {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--gradient);
+  transition: width 0.1s linear;
+}
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(224, 231, 241, 0.9);
+  background: rgba(247, 249, 252, 0.8);
+  backdrop-filter: saturate(180%) blur(16px);
+}
+
+.nav-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: var(--max-width);
+  min-height: 62px;
+  margin-inline: auto;
+  padding: 10px 24px;
+}
+
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 10px;
+  border-radius: 8px;
+  color: var(--ink);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.nav-brand:hover { transform: translateY(-1px); opacity: 0.86; text-decoration: none; }
+
+.brand-logo-frame {
+  display: block;
+  width: 30px; height: 30px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+.brand-name {
+  font-size: 14.5px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+.nav-links a {
+  padding: 7px 10px;
+  border-radius: 9px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.nav-links a:hover,
+.nav-links a.active {
+  background: var(--brand-soft);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.nav-github {
+  display: inline-flex;
+  min-height: 38px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-left: 5px;
+  padding: 8px 13px;
+  border-radius: 11px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+.nav-github:hover { background: var(--brand-3); text-decoration: none; }
+.nav-github svg { width: 16px; height: 16px; }
+
+.nav-toggle {
+  display: none;
+  width: 40px; height: 40px;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.nav-toggle svg { width: 20px; height: 20px; }
+
+/* ---------------------------------------------------------------- buttons */
+.button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 11px 18px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 14.5px;
+  font-weight: 700;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+}
+.button svg { width: 17px; height: 17px; }
+.button.primary {
+  border-color: transparent;
+  background: var(--gradient);
+  color: #fff;
+}
+.button.is-disabled,
+.button[aria-disabled="true"] {
+  box-shadow: none;
+  background: var(--bg-2);
+  color: var(--muted);
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+.button.is-disabled:hover,
+.button[aria-disabled="true"]:hover { transform: none; box-shadow: none; }
+
+/* ---------------------------------------------------------------- hero */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(54px, 7vh, 80px) 0 clamp(52px, 6vh, 68px);
+  background:
+    radial-gradient(120% 90% at 12% 0%, rgba(47, 119, 194, 0.16), transparent 54%),
+    radial-gradient(115% 90% at 90% 4%, rgba(224, 138, 30, 0.12), transparent 55%),
+    linear-gradient(160deg, #e7f0fa 0%, #eff5fc 38%, var(--bg) 70%, #f4f8fd 100%);
+  text-align: center;
+}
+.hero::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(27, 64, 121, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(27, 64, 121, 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  content: "";
+  mask-image: radial-gradient(74% 68% at 50% 27%, #000, transparent 82%);
+  pointer-events: none;
+}
+.hero-blob {
+  position: absolute;
+  z-index: 0;
+  border-radius: 999px;
+  filter: blur(92px);
+  opacity: 0.16;
+  animation: float 16s ease-in-out infinite;
+}
+.hero-blob.one { top: -200px; left: -120px; width: 500px; height: 500px; background: #2f77c2; }
+.hero-blob.two { top: -160px; right: -120px; width: 470px; height: 470px; background: var(--accent); animation-delay: -6s; }
+
+@keyframes float {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(24px, 34px, 0) scale(1.07); }
+}
+
+.hero-inner { position: relative; z-index: 2; }
+.hero-inner > * {
+  opacity: 0;
+  transform: translateY(18px);
+  animation: rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+.hero-inner > :nth-child(1) { animation-delay: 0.04s; }
+.hero-inner > :nth-child(2) { animation-delay: 0.13s; }
+.hero-inner > :nth-child(3) { animation-delay: 0.22s; }
+.hero-inner > :nth-child(4) { animation-delay: 0.31s; }
+.hero-inner > :nth-child(5) { animation-delay: 0.4s; }
+.hero-inner > :nth-child(6) { animation-delay: 0.49s; }
+.hero-inner > :nth-child(7) { animation-delay: 0.58s; }
+
+@keyframes rise {
+  to { opacity: 1; transform: none; }
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto 22px;
+  padding: 9px 22px;
+  border: 1px solid rgba(27, 64, 121, 0.18);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  box-shadow: var(--shadow-sm);
+  color: var(--brand);
+  font-family: "Sora", "Inter", sans-serif;
+  font-size: clamp(14px, 1.75vw, 19px);
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.hero-title {
+  position: relative;
+  max-width: 16ch;
+  margin: 0 auto 18px;
+  color: var(--ink);
+  font-size: clamp(40px, 6.4vw, 74px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.03;
+}
+.hero-title .title-gradient {
+  background: var(--gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* the frontier drawing that sits behind the title */
+.title-frontier {
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  width: min(880px, 132%);
+  translate: -50% -50%;
+  opacity: 0.6;
+  pointer-events: none;
+  /* punch a soft hole where the wordmark sits, so the frontier reads as
+     passing behind the title rather than across it */
+  mask-image: radial-gradient(ellipse 40% 30% at 50% 52%, transparent 42%, #000 88%);
+  -webkit-mask-image: radial-gradient(ellipse 40% 30% at 50% 52%, transparent 42%, #000 88%);
+}
+.title-frontier svg { width: 100%; height: auto; overflow: visible; }
+.frontier-axis { stroke: rgba(27, 64, 121, 0.3); stroke-width: 2; fill: none; }
+.frontier-curve {
+  fill: none;
+  stroke: rgba(27, 64, 121, 0.34);
+  stroke-width: 2.4;
+  stroke-dasharray: 7 7;
+  animation: dash 14s linear infinite;
+}
+@keyframes dash { to { stroke-dashoffset: -280; } }
+.frontier-dot { transition: r 0.3s ease; }
+.frontier-ghost {
+  fill: none;
+  stroke: #c0392b;
+  stroke-width: 2.2;
+  stroke-dasharray: 5 5;
+  animation: ghost 3.6s ease-in-out infinite;
+}
+@keyframes ghost {
+  0%, 100% { opacity: 0.32; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.08); }
+}
+.frontier-ghost-mark { stroke: #c0392b; stroke-width: 2.4; opacity: 0.5; }
+.frontier-runner { fill: var(--accent); }
+.title-frontier.is-trying .frontier-runner { animation: attempt 1.5s cubic-bezier(0.3, 0.8, 0.4, 1) 1; }
+@keyframes attempt {
+  0% { transform: translate(0, 0); }
+  38% { transform: translate(0, -120px); opacity: 1; }
+  54% { transform: translate(0, -120px); opacity: 0.2; }
+  100% { transform: translate(0, 0); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .frontier-curve, .frontier-ghost, .hero-blob { animation: none; }
+}
+
+.hero-subtitle {
+  max-width: 74ch;
+  margin: 0 auto 26px;
+  color: var(--ink-2);
+  font-size: clamp(16px, 1.6vw, 18.5px);
+}
+.hero-subtitle strong { color: var(--ink); }
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 11px;
+  margin-bottom: 22px;
+}
+
+.hero-socials {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 26px;
+}
+.hero-socials:empty { display: none; }
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 700;
+}
+.social-link:hover { border-color: var(--brand); text-decoration: none; }
+.social-link svg { width: 14px; height: 14px; }
+
+.hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+.hero-stat {
+  width: 208px;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--surface-soft);
+  box-shadow: var(--shadow-sm);
+}
+.hero-stat strong {
+  display: block;
+  color: var(--brand);
+  font-family: "Sora", sans-serif;
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+.hero-stat span {
+  display: block;
+  color: var(--ink-2);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.hero-stat small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11.8px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.hero-authors { color: var(--ink-2); }
+.author-list {
+  max-width: 78ch;
+  margin: 0 auto 8px;
+  font-size: 15px;
+  line-height: 1.9;
+}
+.author-line { display: block; }
+.author { margin-right: 4px; white-space: nowrap; }
+.author strong { font-weight: 600; }
+.author a { color: inherit; text-decoration: none; border-bottom: 1px solid rgba(27, 64, 121, 0.28); }
+.author a:hover { color: var(--brand-2); }
+.author-roles,
+.author-affiliations {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 18px;
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ---------------------------------------------------------------- sections */
+main { display: block; }
+section {
+  position: relative;
+  padding: clamp(56px, 8vh, 88px) 0;
+}
+section.band { background: var(--bg-2); }
+
+.section-head { margin-bottom: 34px; text-align: center; }
+.section-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 13px;
+  color: var(--brand);
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.badge {
+  display: grid;
+  width: 25px; height: 25px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+}
+.section-title {
+  max-width: 22ch;
+  margin: 0 auto 12px;
+  font-size: clamp(26px, 3.4vw, 39px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.14;
+}
+.section-subtitle {
+  max-width: 68ch;
+  margin: 0 auto;
+  color: var(--muted);
+  font-size: 16px;
+}
+.section-subtitle strong { color: var(--ink-2); }
+
+.level-total {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  color: var(--muted);
+  font-size: 13px;
+}
+.level-total strong { color: var(--ink); }
+
+/* ---------------------------------------------------------------- cards & figures */
+.abstract-card {
+  padding: clamp(26px, 3.5vw, 42px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  font-size: 16.5px;
+}
+.abstract-card p { margin: 0 0 16px; }
+.abstract-card p:last-child { margin-bottom: 0; }
+.abstract-keywords { color: var(--muted); font-size: 14.5px; }
+
+.figure {
+  margin: 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+.figure img { width: 100%; height: auto; border-radius: 12px; cursor: zoom-in; }
+.figure-caption {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 13.8px;
+  line-height: 1.6;
+}
+.figure-caption strong { color: var(--ink-2); }
+.figure-hint {
+  display: inline-block;
+  margin-left: 6px;
+  color: var(--brand-2);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.hero-figure { padding: 22px; }
+
+.feature-cards {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  margin-top: 32px;
+}
+.feature-card {
+  position: relative;
+  padding: 24px 22px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.feature-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.feature-number {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--brand);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.6;
+}
+.feature-card h4 { margin: 0 0 7px; font-size: 16.5px; }
+.feature-card p { margin: 0; color: var(--muted); font-size: 14.2px; }
+
+.intro-block {
+  max-width: 78ch;
+  margin: 32px auto 0;
+  padding: 26px 28px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--brand);
+  border-radius: 15px;
+  background: var(--surface);
+}
+.intro-block h3 { margin: 0 0 10px; font-size: 19px; }
+.prose p { margin: 0 0 12px; color: var(--ink-2); }
+.prose p:last-child { margin-bottom: 0; }
+
+.equation {
+  margin: 0 auto 26px;
+  padding: 20px 24px;
+  max-width: 62ch;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: clamp(14px, 2vw, 18px);
+  font-weight: 700;
+  color: var(--ink);
+}
+.equation .eq-var { color: var(--brand-2); }
+.equation .eq-out { color: var(--accent); }
+
+/* ---------------------------------------------------------------- taxonomy rail */
+.taxonomy-rail {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(232px, 1fr));
+}
+.taxonomy-step {
+  position: relative;
+  padding: 22px 20px 20px;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--step);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.taxonomy-step:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.taxonomy-step.fam-human { --step: var(--fam-human); }
+.taxonomy-step.fam-rules { --step: var(--fam-rules); }
+.taxonomy-step.fam-learned { --step: var(--fam-learned); }
+.taxonomy-step.fam-intrinsic { --step: var(--fam-intrinsic); }
+.level-code {
+  display: inline-block;
+  margin-bottom: 9px;
+  padding: 3px 10px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--step) 14%, white);
+  color: var(--step);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.taxonomy-step h3 { margin: 0 0 8px; font-size: 18px; }
+.taxonomy-step p { margin: 0 0 6px; color: var(--muted); font-size: 13.8px; }
+.taxonomy-step .step-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 12px;
+}
+.chip {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--bg-2);
+  color: var(--ink-2);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+.chip.up { background: var(--green-soft); color: var(--green); }
+.chip.down { background: #fbe9e7; color: #b0472e; }
+
+.boundary-note {
+  max-width: 80ch;
+  margin: 26px auto 0;
+  padding: 16px 20px;
+  border: 1px dashed rgba(27, 64, 121, 0.32);
+  border-radius: 14px;
+  background: var(--surface-soft);
+  color: var(--ink-2);
+  font-size: 14.6px;
+  text-align: center;
+}
+.boundary-note strong { color: var(--brand); }
+
+/* ---------------------------------------------------------------- data tables */
+.table-scroll {
+  overflow-x: auto;
+  margin-top: 26px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 640px;
+}
+table.data th,
+table.data td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+table.data thead th {
+  background: var(--bg-2);
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+table.data tbody tr:last-child td { border-bottom: none; }
+table.data tbody tr.hard td { background: #fdf6ee; }
+table.data td strong { color: var(--ink); }
+.tag-select,
+.tag-optimize {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 800;
+}
+.tag-select { background: var(--green-soft); color: var(--green); }
+.tag-optimize { background: #fbe9e7; color: #b0472e; }
+
+/* ---------------------------------------------------------------- family sections */
+.level-section .section-kicker { color: var(--fam); }
+.level-section .badge { background: color-mix(in srgb, var(--fam) 13%, white); color: var(--fam); }
+.level-section.fam-human { --fam: var(--fam-human); }
+.level-section.fam-rules { --fam: var(--fam-rules); }
+.level-section.fam-learned { --fam: var(--fam-learned); }
+.level-section.fam-intrinsic { --fam: var(--fam-intrinsic); }
+
+.level-layout {
+  display: grid;
+  gap: 26px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: start;
+}
+.level-layout.reverse > .figure { order: 2; }
+
+.method-grid {
+  display: grid;
+  gap: 13px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+.method-card {
+  padding: 19px 18px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.method-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.method-card h4 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 7px;
+  font-size: 15.4px;
+  line-height: 1.35;
+}
+.method-card p { margin: 0; color: var(--muted); font-size: 13.8px; }
+.count-chip {
+  flex: 0 0 auto;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fam, var(--brand)) 12%, white);
+  color: var(--fam, var(--brand));
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tradeoff-bar {
+  display: grid;
+  gap: 3px;
+  margin-top: 16px;
+}
+.tradeoff-row {
+  display: grid;
+  grid-template-columns: 128px 1fr;
+  align-items: center;
+  gap: 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+  font-weight: 700;
+}
+.meter {
+  position: relative;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--bg-2);
+  overflow: hidden;
+}
+.meter span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--v);
+  border-radius: 999px;
+  background: var(--fam, var(--brand));
+}
+.meter.alt span { background: var(--green); }
+
+/* ---------------------------------------------------------------- foundations */
+.foundation-grid {
+  display: grid;
+  gap: 26px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  align-items: start;
+}
+.principles { display: grid; gap: 13px; }
+.principle {
+  padding: 19px 20px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+.principle h4 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+.principle-icon {
+  display: grid;
+  width: 26px; height: 26px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+}
+.principle p { margin: 0; color: var(--muted); font-size: 14px; }
+
+/* ---------------------------------------------------------------- catalog */
+.catalog-summary {
+  display: grid;
+  gap: 13px;
+  grid-template-columns: repeat(auto-fit, minmax(212px, 1fr));
+}
+.catalog-card {
+  display: block;
+  padding: 20px 19px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  color: var(--ink);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.catalog-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--brand);
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+}
+.catalog-card.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+.catalog-card.is-disabled:hover { transform: none; border-color: var(--line); box-shadow: var(--shadow-sm); }
+.catalog-card strong {
+  display: block;
+  color: var(--brand);
+  font-family: "Sora", sans-serif;
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+.catalog-card span { display: block; margin-top: 3px; font-size: 14.6px; font-weight: 700; }
+.catalog-card small { display: block; margin-top: 6px; color: var(--muted); font-size: 12.6px; }
+
+.catalog-action {
+  margin-top: 28px;
+  text-align: center;
+}
+.catalog-action p { margin: 12px 0 0; color: var(--muted); font-size: 13.6px; }
+
+/* ---------------------------------------------------------------- about */
+.about-grid {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  align-items: start;
+}
+.about-card,
+.citation-box {
+  padding: 26px 26px 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+.about-card h3, .citation-box h3 { margin: 0 0 10px; font-size: 19px; }
+.about-card p { margin: 0 0 14px; color: var(--ink-2); font-size: 14.8px; }
+.contact-list { margin: 0; padding: 0; list-style: none; }
+.contact-list li { margin-bottom: 7px; }
+.contact-list a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14.2px;
+  font-weight: 600;
+}
+.contact-list svg { width: 15px; height: 15px; }
+.contact-empty { color: var(--muted); font-size: 14px; font-style: italic; }
+
+.citation-label {
+  display: inline-block;
+  margin-bottom: 9px;
+  padding: 3px 10px;
+  border-radius: 7px;
+  background: var(--accent-soft);
+  color: #9a5f06;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.bibtex-head { margin: 14px 0 6px; }
+.bibtex-title {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.citation-code {
+  overflow-x: auto;
+  margin: 0;
+  padding: 16px;
+  border-radius: 13px;
+  background: #0f1d33;
+  color: #dbe6f5;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12.4px;
+  line-height: 1.65;
+}
+.citation-code .accent { color: #7fc4f0; }
+.citation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 15px;
+}
+.citation-actions .button { min-height: 40px; padding: 8px 14px; font-size: 13.5px; }
+
+/* ---------------------------------------------------------------- footer */
+.site-footer {
+  padding: 46px 0 40px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+  text-align: center;
+}
+.footer-mark { width: 30px; height: 30px; display: block; margin: 0 auto; object-fit: contain; }
+.site-footer p { margin: 6px 0; color: var(--muted); font-size: 14px; }
+.site-footer p strong { color: var(--ink); }
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 20px;
+  margin-top: 14px;
+  font-size: 13.6px;
+  font-weight: 700;
+}
+.footer-links [aria-disabled="true"] { color: var(--muted); cursor: not-allowed; }
+
+/* ---------------------------------------------------------------- utilities */
+.back-to-top {
+  position: fixed;
+  right: 22px; bottom: 22px;
+  z-index: 120;
+  display: grid;
+  width: 44px; height: 44px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  color: var(--brand);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+.back-to-top.visible { opacity: 1; transform: none; pointer-events: auto; }
+.back-to-top svg { width: 20px; height: 20px; }
+
+.figure-lightbox {
+  position: fixed;
+  z-index: 300;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: rgba(9, 18, 33, 0.82);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+.figure-lightbox.open { opacity: 1; pointer-events: auto; }
+.figure-lightbox-dialog {
+  position: relative;
+  max-width: min(1200px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  padding: 18px;
+  border-radius: 18px;
+  background: var(--surface);
+}
+.figure-lightbox-image { width: 100%; height: auto; border-radius: 11px; }
+.figure-lightbox-caption { margin: 12px 0 0; color: var(--muted); font-size: 13.5px; }
+.figure-lightbox-close {
+  position: absolute;
+  top: 10px; right: 10px;
+  display: grid;
+  width: 34px; height: 34px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.figure-lightbox-close svg { width: 17px; height: 17px; }
+
+.js .reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.js .reveal.in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js .reveal { opacity: 1; transform: none; transition: none; }
+  .hero-inner > * { opacity: 1; transform: none; animation: none; }
+}
+
+@media (max-width: 980px) {
+  .level-layout,
+  .foundation-grid { grid-template-columns: 1fr; }
+  .level-layout.reverse > .figure { order: 0; }
+}
+
+@media (max-width: 860px) {
+  .nav-toggle { display: inline-flex; }
+  .nav-github { display: none; }
+  .nav-links {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 24px; left: 24px;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 15px;
+    background: var(--surface);
+    box-shadow: var(--shadow-lg);
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { padding: 10px 12px; font-size: 14.5px; }
+  .hero-title { max-width: 100%; }
+  .title-frontier { display: none; }
+}
+
+@media (max-width: 560px) {
+  .wrap { width: min(100% - 32px, var(--max-width)); }
+  .setup-notice-inner { width: min(100% - 32px, var(--max-width)); flex-direction: column; }
+  .hero-stat { width: auto; flex: 1 1 150px; }
+}
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div
+      class="reading-progress"
+      role="progressbar"
+      aria-label="Page reading progress"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+    >
+      <span class="reading-progress-bar"></span>
+    </div>
+
+    <!-- Rendered by applySiteConfig() only when SITE still has empty fields. -->
+    <aside class="setup-notice" id="setup-notice" hidden></aside>
+
+    <nav class="site-nav" aria-label="Primary navigation">
+      <div class="nav-inner">
+        <a class="nav-brand" href="#top" aria-label="Back to the top of the Awesome Robot Verifier page">
+          <img class="brand-logo-frame" src="assets/verifier.svg" alt="" aria-hidden="true">
+          <span class="brand-name">Awesome Robot Verifier</span>
+        </a>
+
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="nav-links"
+          aria-label="Open navigation menu"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 7h16M4 12h16M4 17h16"></path>
+          </svg>
+        </button>
+
+        <div class="nav-links" id="nav-links">
+          <a href="#abstract">Abstract</a>
+          <a href="#landscape">Landscape</a>
+          <a href="#taxonomy">Taxonomy</a>
+          <a href="#families">Families</a>
+          <a href="#validating">Validating</a>
+          <a href="#report">Checklist</a>
+          <a href="#papers">Papers</a>
+          <a href="#about">About</a>
+        </div>
+
+        <a
+          class="nav-github"
+          data-site-link="repoUrl"
+          data-pending="GitHub · pending"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open the GitHub repository in a new tab"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 .7a11.5 11.5 0 0 0-3.64 22.4c.58.1.79-.25.79-.56v-2.03c-3.22.7-3.9-1.37-3.9-1.37-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.57-.29-5.27-1.28-5.27-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.16 1.18a10.96 10.96 0 0 1 5.75 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.73.8 1.18 1.83 1.18 3.08 0 4.41-2.71 5.38-5.29 5.67.42.36.79 1.07.79 2.16v3.2c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .7Z"></path>
+          </svg>
+          <span class="nav-github-label">GitHub</span>
+        </a>
+      </div>
+    </nav>
+
+    <header class="hero" id="top">
+      <div class="hero-blob one" aria-hidden="true"></div>
+      <div class="hero-blob two" aria-hidden="true"></div>
+      <div class="wrap hero-inner">
+        <span class="hero-eyebrow">A survey of verifiers for robot policies</span>
+
+        <h1 class="hero-title" data-frontier>
+          <span class="title-frontier" aria-hidden="true">
+            <svg viewBox="0 0 900 210" role="presentation">
+              <defs>
+                <linearGradient id="frontier-fade" x1="0" y1="0" x2="900" y2="210" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#1b4079" stop-opacity="0.6"></stop>
+                  <stop offset="1" stop-color="#e08a1e" stop-opacity="0.6"></stop>
+                </linearGradient>
+              </defs>
+
+              <!-- credibility rises to the left, availability to the right -->
+              <path class="frontier-axis" d="M74 186 L74 26"></path>
+              <path class="frontier-axis" d="M74 186 L846 186"></path>
+              <path class="frontier-axis" d="M74 26 l-6 11 M74 26 l6 11"></path>
+              <path class="frontier-axis" d="M846 186 l-11 -6 M846 186 l-11 6"></path>
+
+              <!-- the attainable frontier: credibility falls as availability rises -->
+              <path
+                class="frontier-curve"
+                d="M140 46 C 250 56, 302 68, 362 90 C 432 116, 472 128, 542 138 C 632 152, 702 162, 772 168"
+                stroke="url(#frontier-fade)"
+              ></path>
+
+              <circle class="frontier-dot" cx="140" cy="46" r="8" fill="#5b7fb9"></circle>
+              <circle class="frontier-dot" cx="362" cy="90" r="8" fill="#1b4079"></circle>
+              <circle class="frontier-dot" cx="542" cy="138" r="8" fill="#2b8ca6"></circle>
+              <g class="frontier-runner">
+                <circle cx="772" cy="168" r="8"></circle>
+              </g>
+
+              <!-- the corner nobody reaches -->
+              <circle class="frontier-ghost" cx="772" cy="48" r="21" style="transform-origin: 772px 48px"></circle>
+              <path class="frontier-ghost-mark" d="M763 39 l18 18 M781 39 l-18 18" fill="none"></path>
+            </svg>
+          </span>
+          No <span class="title-gradient">Free Checker</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Vision-language-action policies and robot world models are scaling fast, and verification of training
+          data and model behaviour is scaling with them. A curated reading list of <strong>184 works</strong> on
+          the mechanisms that supply those verification signals — grouped by
+          <strong>who supplies the judgment</strong>, and read along two properties:
+          <strong>availability</strong> and <strong>credibility</strong>.
+        </p>
+
+        <div class="hero-actions">
+          <a
+            class="button"
+            data-site-link="paperPdfUrl"
+            data-pending="Paper · coming soon"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2h9l5 5v15H6z"></path>
+              <path d="M14 2v6h6M9 13h6M9 17h6"></path>
+            </svg>
+            <span class="button-label">Paper (PDF)</span>
+          </a>
+          <a
+            class="button"
+            data-site-link="arxivUrl"
+            data-pending="arXiv · coming soon"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 14 21 3M15 3h6v6"></path>
+              <path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path>
+            </svg>
+            <span class="button-label">arXiv</span>
+          </a>
+          <a
+            class="button primary"
+            data-site-link="repoUrl"
+            data-pending="Reading list · pending"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 .7a11.5 11.5 0 0 0-3.64 22.4c.58.1.79-.25.79-.56v-2.03c-3.22.7-3.9-1.37-3.9-1.37-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.57-.29-5.27-1.28-5.27-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.16 1.18a10.96 10.96 0 0 1 5.75 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.73.8 1.18 1.83 1.18 3.08 0 4.41-2.71 5.38-5.29 5.67.42.36.79 1.07.79 2.16v3.2c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .7Z"></path>
+            </svg>
+            <span class="button-label">Code / Reading List</span>
+          </a>
+          <a class="button" href="#taxonomy">
+            Explore the four families
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </a>
+        </div>
+
+        <div class="hero-socials" id="hero-socials" aria-label="Survey announcement posts"></div>
+
+        <div class="hero-stats" aria-label="Collection statistics">
+          <div class="hero-stat">
+            <strong data-count="184">184</strong>
+            <span>works cataloged</span>
+            <small>every one filed exactly once</small>
+          </div>
+          <div class="hero-stat">
+            <strong data-count="4">4</strong>
+            <span>verifier families</span>
+            <small>who supplies the judgment</small>
+          </div>
+          <div class="hero-stat">
+            <strong data-count="9">9</strong>
+            <span>metrics to report</span>
+            <small>what makes a verifier claim checkable by someone else</small>
+          </div>
+          <div class="hero-stat">
+            <strong data-count="4">4</strong>
+            <span>ways a score gets used</span>
+            <small>curation, ranking, training reward, runtime gate</small>
+          </div>
+        </div>
+
+        <div class="hero-authors" aria-label="Paper authors and affiliations">
+          <p class="author-list" id="author-list">
+            <span class="author-line">
+              <span class="author" data-author="Yang Wan"><strong>Yang Wan</strong><sup>1</sup>,</span>
+              <span class="author" data-author="Xihang Yue"><strong>Xihang Yue</strong><sup>1</sup>,</span>
+              <span class="author" data-author="Zhirui Liu"><strong>Zhirui Liu</strong><sup>1</sup>,</span>
+              <span class="author" data-author="Ziyuan Chu"><strong>Ziyuan Chu</strong><sup>1</sup>,</span>
+              <span class="author" data-author="Shuxun Wang"><strong>Shuxun Wang</strong><sup>1</sup>,</span>
+              <span class="author" data-author="Yuhan Chen"><strong>Yuhan Chen</strong><sup>1</sup></span>
+            </span>
+            <span class="author-line">
+              <span class="author" data-author="Xiaonan Jiang"><strong>Xiaonan Jiang</strong><sup>2</sup>,</span>
+              <span class="author" data-author="Xukun Zhu"><strong>Xukun Zhu</strong><sup>1</sup>,</span>
+              <span class="author" data-author="Yubo Dong"><strong>Yubo Dong</strong><sup>1</sup>,</span>
+              <span class="author" data-author="Linchao Zhu"><strong>Linchao Zhu</strong><sup>1,†</sup></span>
+            </span>
+          </p>
+          <p class="author-roles"><span><sup>†</sup> Corresponding Author</span></p>
+          <p class="author-affiliations">
+            <span><sup>1</sup> Zhejiang University</span>
+            <span><sup>2</sup> City University of Hong Kong</span>
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <!-- ============================================================ abstract -->
+      <section id="abstract" data-nav-section>
+        <div class="wrap">
+          <div class="section-head reveal">
+            <div class="section-kicker"><span class="badge">§</span> Abstract</div>
+            <h2 class="section-title">No Free Checker: A Survey of Verifiers for Robot Policies</h2>
+          </div>
+          <div class="abstract-card reveal">
+            <p>
+              A <strong>verifier</strong> for robot policies reads a candidate behaviour and returns a score for how
+              well it did, used in both policy evaluation and policy training. Such a score is hard to come by in
+              robotics, where success is inferred from a partial observation and every candidate costs a real rollout
+              to try. Under those conditions, different lines of work on verification offer different strengths and
+              limitations.
+            </p>
+            <p>
+              We survey roughly 150 verifiers and group them by <strong>who supplies the judgment</strong>:
+              <strong>human verifiers</strong>, <strong>rule-based and formal verifiers</strong>,
+              <strong>learned and pretrained verifiers</strong>, and <strong>model-intrinsic verifiers</strong>. We
+              characterize the four families along two properties. <em>Availability</em> is how much a verdict costs,
+              how early in a rollout it arrives, and how often it can be asked for, and it rises as verdicts get
+              cheaper, earlier, and denser. <em>Credibility</em> is how much a high score tells us about the task,
+              and it falls as the judgment becomes gameable and self-serving. The four families trade credibility for
+              availability. Regardless of who supplies the judgment,
+              <strong>there is no free checker</strong>.
+            </p>
+            <p>
+              We then examine what validates a verifier itself, and how much a high score tells us. We close with
+              nine metrics a paper can report to make a verifier claim checkable, and they give coordinates for the
+              verifiers still to be built.
+            </p>
+            <p class="abstract-keywords">
+              <b>Keywords</b> robot policy verification; robot learning; policy evaluation; reward models
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ landscape -->
+      <section class="band" id="landscape" data-nav-section>
+        <div class="wrap">
+          <div class="section-head reveal">
+            <div class="section-kicker"><span class="badge">◇</span> Landscape</div>
+            <h2 class="section-title">Across the four families, the two properties move in opposite directions</h2>
+            <p class="section-subtitle">
+              Obtaining both high availability and high credibility in the physical world is costly. Every
+              family buys a cheaper, denser, earlier verdict by moving the source of judgment closer to the model
+              being evaluated, and the top-right corner stays empty.
+            </p>
+          </div>
+          <figure class="figure hero-figure reveal">
+            <img
+              src="assets/teaser.png"
+              width="1800"
+              height="1002"
+              alt="The four verifier families placed on an availability axis against a credibility axis, with the top-right corner marked no free checker"
+            >
+            <figcaption class="figure-caption">
+              <strong>Figure 1.</strong> The four judge sources, ordered by who supplies the judgment. Human
+              judgment sits highest on credibility and lowest on availability; model-intrinsic signals sit at the
+              opposite corner. Availability rises from left to right and credibility falls with it, and the corner
+              that would be both is empty — <strong>there is no free checker</strong>.
+            </figcaption>
+          </figure>
+
+          <div class="intro-block reveal">
+            <h3>Verification signals are used at multiple stages of robot learning</h3>
+            <div class="prose">
+              <p>
+                Verification signals enter robot learning at four stages: <strong>filtering and reweighting
+                demonstrations</strong> for pre-training, <strong>providing reward signals</strong> during policy
+                post-training, <strong>ranking candidate actions</strong> at inference time, and
+                <strong>evaluating policy performance</strong> on rollouts generated by world models. We refer to
+                the mechanisms that provide these signals collectively as <em>verifiers</em>.
+              </p>
+            </div>
+          </div>
+
+          <div class="section-head reveal" style="margin: 46px auto 26px">
+            <h3 class="section-title" style="max-width: 30ch; font-size: clamp(22px, 2.6vw, 30px)">
+              The physical world lacks the cheap, well-defined criteria of mathematics and code
+            </h3>
+            <p class="section-subtitle">Four difficulties make a reliable verifier hard to build.</p>
+          </div>
+
+          <div class="feature-cards" style="margin-top: 0">
+            <article class="feature-card reveal">
+              <span class="feature-number">01</span>
+              <h4>Success has to be inferred</h4>
+              <p>
+                Determining whether a physical task was completed correctly is costly, because success must
+                usually be read out of imperfect sensory observations rather than exact state.
+              </p>
+            </article>
+            <article class="feature-card reveal">
+              <span class="feature-number">02</span>
+              <h4>Every candidate costs a rollout</h4>
+              <p>
+                Testing a candidate behaviour may require a real-robot rollout, which consumes physical time and
+                puts large-scale sampling out of reach.
+              </p>
+            </article>
+            <article class="feature-card reveal">
+              <span class="feature-number">03</span>
+              <h4>Verification cannot always wait</h4>
+              <p>
+                An incorrect action may already have caused task failure or hardware damage by the time the task
+                would have finished, so some checks have to fire mid-motion.
+              </p>
+            </article>
+            <article class="feature-card reveal">
+              <span class="feature-number">04</span>
+              <h4>Performance is not binary</h4>
+              <p>
+                Behaviours differ in progress, safety, and execution quality, which makes a single
+                success-or-failure label insufficient.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ taxonomy -->
+      <section id="taxonomy" data-nav-section>
+        <div class="wrap">
+          <div class="section-head reveal">
+            <div class="section-kicker"><span class="badge">2</span> Taxonomy</div>
+            <h2 class="section-title">A robot verifier is a mapping</h2>
+            <p class="section-subtitle">
+              The candidate varies the most of the three, running from a single action chunk up to an entire policy,
+              with subtask segments and full trajectories in between.
+            </p>
+          </div>
+
+          <p class="equation reveal">
+            verifier : (<span class="eq-var">context</span>, <span class="eq-var">candidate</span>) ⟼
+            <span class="eq-out">score</span>
+          </p>
+
+          <div class="intro-block reveal">
+            <h3>The context, the score, and the candidate</h3>
+            <div class="prose">
+              <p>
+                The <strong>context</strong> comprises observations, a goal, and possibly a language instruction.
+                The <strong>score</strong> can be boolean, scalar, vector-valued, or a distribution. The
+                <strong>candidate</strong> varies the most of the three, running from a single action chunk up to an
+                entire policy, with subtask segments and full trajectories in between.
+              </p>
+            </div>
+          </div>
+
+          <div class="feature-cards" style="margin-top: 30px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr))">
+            <article class="feature-card reveal" style="border-left: 4px solid var(--green)">
+              <span class="feature-number" style="color: var(--green)">Property 1</span>
+              <h4>Availability</h4>
+              <p>
+                How much a verdict costs, how early in a rollout it arrives, and how often it can be asked for.
+                It rises as verdicts get cheaper, earlier, and denser.
+              </p>
+            </article>
+            <article class="feature-card reveal" style="border-left: 4px solid var(--brand)">
+              <span class="feature-number">Property 2</span>
+              <h4>Credibility</h4>
+              <p>
+                How much a high score tells us about the task. It falls as the judgment becomes gameable and
+                self-serving.
+              </p>
+            </article>
+          </div>
+
+          <div class="intro-block reveal">
+            <h3>The source of judgment strongly affects the availability and credibility of a verifier</h3>
+            <div class="prose">
+              <p>
+                Because the source of judgment strongly affects both availability and credibility, we group
+                existing methods by that source into four families. Each of the next four sections takes one
+                value.
+              </p>
+            </div>
+          </div>
+
+          <div class="taxonomy-rail reveal" aria-label="The four judge sources" style="margin-top: 32px">
+            <article class="taxonomy-step fam-human">
+              <span class="level-code">§2</span>
+              <h3>Human verifiers</h3>
+              <p>A person directly judges task outcomes, compares trajectories, or intervenes during execution.</p>
+              <div class="step-meta">
+                <span class="chip down">costly and sparse</span>
+                <span class="chip up">direct reference to task intent</span>
+              </div>
+            </article>
+            <article class="taxonomy-step fam-rules">
+              <span class="level-code">§3</span>
+              <h3>Rule-based &amp; formal verifiers</h3>
+              <p>The judgment is determined by predefined criteria: task predicates, temporal-logic specifications, or formal safety conditions.</p>
+              <div class="step-meta">
+                <span class="chip">inexpensive and repeatable</span>
+                <span class="chip up">strong, sometimes formal</span>
+              </div>
+            </article>
+            <article class="taxonomy-step fam-learned">
+              <span class="level-code">§4</span>
+              <h3>Learned &amp; pretrained verifiers</h3>
+              <p>A neural model produces the judgment, either after task-specific training or directly from pretraining.</p>
+              <div class="step-meta">
+                <span class="chip up">inexpensive and dense</span>
+                <span class="chip down">bounded by generalization</span>
+              </div>
+            </article>
+            <article class="taxonomy-step fam-intrinsic">
+              <span class="level-code">§5</span>
+              <h3>Model-intrinsic verifiers</h3>
+              <p>The judgment is derived from signals the policy or predictive model already computes: action uncertainty, model disagreement, learned reachability.</p>
+              <div class="step-meta">
+                <span class="chip up">easiest to obtain</span>
+                <span class="chip down">indirect relation to task success</span>
+              </div>
+            </article>
+          </div>
+
+          <p class="boundary-note reveal">
+            <strong>Read top to bottom:</strong> availability rises and credibility falls.
+            Regardless of who supplies the judgment, <strong>there is no free checker</strong>.
+          </p>
+
+          <figure class="figure reveal" style="margin-top: 32px">
+            <img
+              src="assets/timeline.png"
+              width="1386"
+              height="703"
+              loading="lazy"
+              alt="Representative verifier systems plotted by judge source and publication year from 2020 to 2026"
+            >
+            <figcaption class="figure-caption">
+              <strong>Figure 2.</strong> Representative systems by judge source and year, using the same five
+              columns as Figure 3. Disc area is the number of papers covered at that point. The search closes in
+              early July 2026, so each 2026 disc carries a dashed ring at the full-year estimate, twice the
+              observed count at the January-to-June rate.
+            </figcaption>
+          </figure>
+
+          <div class="intro-block reveal">
+            <h3>The demand on a verifier depends on how its score is used</h3>
+            <div class="prose">
+              <p>
+                The four uses below are ordered by whether the score is <strong>searched against</strong>. Curation
+                and ranking select among candidates produced without access to the score, so an error there averages
+                out over the corpus. A training reward and a runtime gate meet candidates produced by a process
+                searching for the inputs where the score is wrong, so a rare region of that kind is still enough to
+                break the score.
+              </p>
+            </div>
+          </div>
+
+          <div class="table-scroll reveal">
+            <table class="data">
+              <thead>
+                <tr>
+                  <th scope="col">Use</th>
+                  <th scope="col">How candidates arise</th>
+                  <th scope="col">Property required</th>
+                  <th scope="col">Cost of error</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="tag-select">select</span> <strong>Curation</strong></td><td>fixed corpus, verifier unseen</td><td>average accuracy, split by error type</td><td>a false positive trains on a failure</td></tr>
+                <tr><td><span class="tag-select">select</span> <strong>Ranking &amp; OPE</strong></td><td>non-adversarial sampling</td><td>average accuracy, calibration</td><td>the wrong checkpoint ships</td></tr>
+                <tr class="hard"><td><span class="tag-optimize">optimize</span> <strong>Training reward</strong></td><td>closed loop, actively searched</td><td>no exploitable region</td><td>the policy learns to attack the verifier</td></tr>
+                <tr class="hard"><td><span class="tag-optimize">optimize</span> <strong>Runtime gating</strong></td><td>closed loop, millisecond budget</td><td>no exploitable region, plus latency</td><td>hardware damage</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <figure class="figure reveal" style="margin-top: 26px">
+            <img
+              src="assets/property.png"
+              width="1349"
+              height="779"
+              loading="lazy"
+              alt="A table of what a score asserts, plotted against the judge source that supplies the criterion"
+            >
+            <figcaption class="figure-caption">
+              <strong>Figure 3.</strong> What a score asserts, against the judge source that supplies it. Fill depth
+              is the number of papers in the cell. Each paper is counted in exactly one judge-source column, and a
+              paper asserting two properties appears in both rows. The model-intrinsic column asserts least about
+              the task, because it reads the model rather than the task.
+            </figcaption>
+          </figure>
+
+          <div class="intro-block reveal">
+            <h3>How the rest of the survey is organized</h3>
+            <div class="prose">
+              <p>
+                Having grouped the methods, we examine in <strong>§6</strong> how a verifier's own error is
+                measured, and why credibility is difficult to establish in robotics. Three metrics appear:
+                <strong>agreement with a fixed reference</strong>, <strong>the policy that results from training on
+                the verifier</strong>, and its <strong>behaviour under a process searching for the inputs where it
+                is wrong</strong>.
+              </p>
+              <p>
+                <strong>§6.4</strong> closes with the nine metrics a paper can report so that a verifier is
+                checkable by someone else, and <strong>§7</strong> concludes.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ families -->
+      <section class="level-section fam-human band" id="families" data-nav-section>
+        <div class="wrap">
+          <div class="section-head reveal">
+            <div class="section-kicker"><span class="badge">2</span> Human Verifiers</div>
+            <h2 class="section-title">A person looks at what the policy did and says whether it is good</h2>
+            <p class="section-subtitle">
+              <strong>Availability:</strong> costly and sparse, because judgments take human effort. <strong>Credibility:</strong> a direct reference to task intent, although it may still be
+              subjective or inconsistent. This family appears mostly as the small sample that validates the other
+              three.
+            </p>
+            <span class="level-total"><strong>15</strong> cataloged works</span>
+          </div>
+          <div class="level-layout">
+            <figure class="figure reveal">
+              <img
+                src="assets/human.png"
+                width="1800"
+                height="1078"
+                loading="lazy"
+                alt="Four roles of the human verifier: comparing trajectories, scoring them, intervening during execution, and validating generated rollouts"
+              >
+              <figcaption class="figure-caption">
+                <strong>Figure 4.</strong> The first three roles judge policy behaviour. The fourth changes the
+                object rather than the question, asking whether a generated rollout ends in the same success or
+                failure the real execution would have reached — a property the survey calls
+                <em>outcome preservation</em>.
+              </figcaption>
+            </figure>
+            <div>
+              <div class="method-grid">
+                <article class="method-card reveal">
+                  <h4>Pairwise preference comparison <span class="count-chip">4</span></h4>
+                  <p>Two trajectory segments side by side; the person picks the better one. Used directly for ranking, or as supervision for a learned reward model.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Scalar and per-timestep annotation <span class="count-chip">1</span></h4>
+                  <p>A curve drawn over a replay gives a score at every time step, not one label per pair.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Human-in-the-loop intervention <span class="count-chip">8</span></h4>
+                  <p>Human-gated and robot-gated takeover. The difference is who decides to intervene; the person still supplies the correction.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Human validation of generated rollouts <span class="count-chip">2</span></h4>
+                  <p>Outcome-preservation ratings on world-model video. A model tuned on those ratings then carries that reference to scale, rating the rest of the corpus.</p>
+                </article>
+              </div>
+              <div class="tradeoff-bar reveal">
+                <div class="tradeoff-row"><span>Availability</span><span class="meter"><span style="--v: 18%"></span></span></div>
+                <div class="tradeoff-row"><span>Credibility</span><span class="meter alt"><span style="--v: 92%"></span></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="level-section fam-rules">
+        <div class="wrap">
+          <div class="section-head reveal">
+            <div class="section-kicker"><span class="badge">3</span> Rule-Based and Formal Verifiers</div>
+            <h2 class="section-title">A criterion written before the run, applied without asking a person at inference time</h2>
+            <p class="section-subtitle">
+              <strong>Availability:</strong> inexpensive and repeatable, once the required state information is
+              available. <strong>Credibility:</strong> strong and sometimes formal guarantees — but only when
+              the predefined criteria, state estimates, and dynamics assumptions accurately represent the task.
+            </p>
+            <span class="level-total"><strong>43</strong> cataloged works</span>
+          </div>
+          <div class="level-layout reverse">
+            <figure class="figure reveal">
+              <img
+                src="assets/rules.png"
+                width="1536"
+                height="1024"
+                loading="lazy"
+                alt="Rule-based verifier taxonomy grouped by input type: full trajectory, terminal state, and system model"
+              >
+              <figcaption class="figure-caption">
+                <strong>Figure 5.</strong> Grouped by what the criterion reads. Temporal-logic scoring, geometric
+                checks, and model-written rules read a full trajectory; a goal predicate reads only the terminal
+                state; invariance certificates and symbolic feasibility checks run over a model of the physics.
+              </figcaption>
+            </figure>
+            <div>
+              <div class="method-grid">
+                <article class="method-card reveal">
+                  <h4>Temporal-logic specifications and satisfaction margins <span class="count-chip">7</span></h4>
+                  <p>Signal temporal logic scored over a run, returning a real-valued satisfaction margin instead of a bare pass or fail — sometimes with a conformal interval around it.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Trajectory-geometry scoring <span class="count-chip">1</span></h4>
+                  <p>Smoothness and self-similarity read off the shape of the path itself, with no task specification written by hand.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>LLM-written reward and monitor code <span class="count-chip">7</span></h4>
+                  <p>A language model writes the reward function or the monitor; the generated code is what decides. Only the optimization branch ranks its own output against the task.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Goal predicates in simulation benchmarks <span class="count-chip">11</span></h4>
+                  <p>A true/false test on the final state. It needs exact object pose, so it is confined to simulation — where it determines every number the benchmark reports.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Predicate-filtered demonstration generation <span class="count-chip">6</span></h4>
+                  <p>The same free check runs the generate-and-keep loop, so generation and verification become one procedure.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Sparse binary reward for policy training <span class="count-chip">4</span></h4>
+                  <p>The success bit as the only reward, deliberately without shaping, value functions, or a reward model.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Control barrier functions and safety filters <span class="count-chip">5</span></h4>
+                  <p>An invariance certificate proving the robot stays inside a safe set, for every trajectory the dynamics can produce. The theorem applies to the exact value function; a network approximating it carries the guarantee only with a separate verification step.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Symbolic feasibility and task-and-motion planning <span class="count-chip">2</span></h4>
+                  <p>A pre-run check that a plan is physically possible at all, before anything moves.</p>
+                </article>
+              </div>
+              <div class="tradeoff-bar reveal">
+                <div class="tradeoff-row"><span>Availability</span><span class="meter"><span style="--v: 46%"></span></span></div>
+                <div class="tradeoff-row"><span>Credibility</span><span class="meter alt"><span style="--v: 78%"></span></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="level-section fam-learned band">
+        <div class="wrap">
+          <div class="section-head reveal">
+            <div class="section-kicker"><span class="badge">4</span> Learned and Pretrained Verifiers</div>
+            <h2 class="section-title">The score comes from a forward pass of a neural network</h2>
+            <p class="section-subtitle">
+              <strong>Availability:</strong> inexpensive to query, and dense across many tasks and trajectories.
+              <strong>Credibility:</strong> dependent on model accuracy, calibration, and generalization beyond
+              the data the model was trained or validated on. The largest group in this survey.
+            </p>
+            <span class="level-total"><strong>55</strong> cataloged works</span>
+          </div>
+          <div class="level-layout">
+            <figure class="figure reveal">
+              <img
+                src="assets/scorers.png"
+                width="1536"
+                height="829"
+                loading="lazy"
+                alt="Learned verifier constructions ordered by the object handed to the scorer and the kind of score returned"
+              >
+              <figcaption class="figure-caption">
+                <strong>Figure 6.</strong> The three roles a learned verifier plays: measuring an execution at
+                process or trajectory level, choosing among candidates at inference time, and feeding a score back
+                into policy optimization or data curation. Every construction is one forward pass at scoring time.
+              </figcaption>
+            </figure>
+            <div>
+              <div class="method-grid">
+                <article class="method-card reveal">
+                  <h4>Dense and process-level reward models <span class="count-chip">15</span></h4>
+                  <p>A temporally localized score — progress, a stage, a per-frame value — assigned inside a rollout rather than after it.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Success detection and trajectory-level judgment <span class="count-chip">5</span></h4>
+                  <p>Did the drawer open? One holistic verdict for a completed rollout, aggregated into a policy ranking.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Inference-time candidate ranking <span class="count-chip">8</span></h4>
+                  <p>Sample several candidate actions, skills, or plans, score them, and execute the best — with the policy weights left frozen.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>World-model lookahead and failure prediction <span class="count-chip">4</span></h4>
+                  <p>Roll a learned model forward and judge the predicted consequence, either to pick a candidate or to monitor the action already committed to.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Learned reward for policy optimization <span class="count-chip">9</span></h4>
+                  <p>The verifier's output becomes a reward, an advantage, or a preference objective, and the policy parameters move with it.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Self-improvement and rollout filtering <span class="count-chip">5</span></h4>
+                  <p>A verifier decides which newly generated rollouts re-enter training, closing a generate-filter-train loop on the policy's own experience.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Data curation and demonstration scoring <span class="count-chip">9</span></h4>
+                  <p>Scoring the training value of a demonstration, from the trajectory alone, from the corpus around it, or from the policy it produces.</p>
+                </article>
+              </div>
+              <div class="tradeoff-bar reveal">
+                <div class="tradeoff-row"><span>Availability</span><span class="meter"><span style="--v: 80%"></span></span></div>
+                <div class="tradeoff-row"><span>Credibility</span><span class="meter alt"><span style="--v: 46%"></span></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="level-section fam-intrinsic">
+        <div class="wrap">
+          <div class="section-head reveal">
+            <div class="section-kicker"><span class="badge">5</span> Model-Intrinsic Verifiers</div>
+            <h2 class="section-title">A quantity the robot&rsquo;s own policy or learned world model already computes</h2>
+            <p class="section-subtitle">
+              <strong>Availability:</strong> the easiest to obtain, because these signals require little or no
+              additional computation or external supervision. <strong>Credibility:</strong> they describe
+              properties of the model itself rather than task performance directly, so their relation to actual
+              task success is indirect.
+            </p>
+            <span class="level-total"><strong>25</strong> cataloged works</span>
+          </div>
+          <div class="level-layout reverse">
+            <figure class="figure reveal">
+              <img
+                src="assets/intrinsic.png"
+                width="1800"
+                height="1060"
+                loading="lazy"
+                alt="Model-derived verifiers reading the robot's own policy or world model for failure detection, candidate selection, and outcome verification"
+              >
+              <figcaption class="figure-caption">
+                <strong>Figure 7.</strong> Signals read out of the policy or the predictive model support failure
+                detection, candidate selection, outcome verification, and training prioritization without an
+                independent external evaluator — which is exactly what limits what they can assert.
+              </figcaption>
+            </figure>
+            <div>
+              <div class="method-grid">
+                <article class="method-card reveal">
+                  <h4>Runtime failure detection and gating <span class="count-chip">7</span></h4>
+                  <p>A predictor over the policy's own internal representations raises an alarm mid-execution, often with a conformally calibrated false-positive rate.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Action selection from policy self-consistency <span class="count-chip">2</span></h4>
+                  <p>Pick the candidate the policy is most confident in, or most familiar with, before any of them is executed.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Generative likelihood and latent discrepancy <span class="count-chip">3</span></h4>
+                  <p>How ordinary a trajectory looks to a video model, or how far the observed outcome lands from the one the model predicted.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Model uncertainty and ensemble disagreement <span class="count-chip">4</span></h4>
+                  <p>An imagined rollout is scored down where the learned dynamics model disagrees with itself about it.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Reachability values and latent safety filters <span class="count-chip">7</span></h4>
+                  <p>Whether failure can still be avoided from here, computed over a world model's predicted dynamics rather than over how familiar the action looks.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Task and environment selection <span class="count-chip">2</span></h4>
+                  <p>The same quantities read about a whole environment instead of one action, deciding what the policy trains on next.</p>
+                </article>
+              </div>
+              <div class="tradeoff-bar reveal">
+                <div class="tradeoff-row"><span>Availability</span><span class="meter"><span style="--v: 95%"></span></span></div>
+                <div class="tradeoff-row"><span>Credibility</span><span class="meter alt"><span style="--v: 26%"></span></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ validating -->
+      <section class="band" id="validating" data-nav-section>
+        <div class="wrap">
+          <div class="section-head reveal">
+            <div class="section-kicker"><span class="badge">6</span> Validating the Verifier</div>
+            <h2 class="section-title">An error in the verifier looks like a correct result</h2>
+            <p class="section-subtitle">
+              It is important to measure a verifier's own error, because a verifier is used in four places and an
+              error in it reaches all of them: the training data, the reported ranking, the reward, and the executed
+              action. In each of the four it looks like a correct result.
+            </p>
+          </div>
+
+          <div class="intro-block reveal">
+            <h3>Three metrics of that error appear in the literature</h3>
+            <div class="prose">
+              <p>
+                Throughout, a <em>score</em> is what a verifier returns about a behaviour, and a <em>metric</em> is
+                what we compute about the verifier itself. Each demands more of the verifier than the last, and
+                the second is expensive enough to be rare while the third is largely undeveloped in robotics.
+              </p>
+            </div>
+          </div>
+
+          <div class="principles">
+            <article class="principle reveal">
+              <h4><span class="principle-icon">6.1</span> Agreement on a fixed set of rollouts</h4>
+              <p>
+                Fix the rollouts, fix a reference judgment, and report how often the verifier agrees with it.
+                Benchmarks built this way exist and report that error as their result. An agreement rate still
+                leaves out three things: the error of the reference it was measured against, the interval around
+                the rate itself, and the kind of rollout it was measured on.
+              </p>
+            </article>
+            <article class="principle reveal">
+              <h4><span class="principle-icon">6.2</span> Measuring a verifier by the policy it trains</h4>
+              <p>
+                A verifier is built to train a better policy or filter a better corpus, and that outcome — not
+                agreement with a reference — is what a paper finally wants. It is defined through a training run
+                rather than a labelled test set, so it is expensive and correspondingly rare. The two numbers
+                diverge, because training moves the policy toward exactly the rollouts the verifier gets wrong.
+              </p>
+            </article>
+            <article class="principle reveal">
+              <h4><span class="principle-icon">6.3</span> What optimization requires of a verifier</h4>
+              <p>
+                A verifier used as a training reward or a runtime gate has to meet one more requirement: that no
+                region of inputs makes the score wrong in a way a search can reach. Reward hacking is what happens
+                when that fails. It is well studied on the language side; in robotics the same question is largely
+                undeveloped, and a shared benchmark that holds the candidates fixed and scores each one's
+                exploitability has yet to appear.
+              </p>
+            </article>
+            <article class="principle reveal">
+              <h4><span class="principle-icon">6.4</span> Metrics for validating a verifier</h4>
+              <p>
+                Nine metrics that make a verifier claim comparable across papers, split by whether the score is
+                used to select or optimized against. They are set out in full below.
+              </p>
+            </article>
+          </div>
+
+          <div class="intro-block reveal">
+            <h3>Optimization damages two things</h3>
+            <div class="prose">
+              <p>
+                <strong>It inflates the reward gain the verifier reports.</strong> Every agreement rate and every
+                downstream gain collected in this survey was measured on candidates that ran no search against the
+                verifier, so both numbers overstate what the verifier is worth to a policy trained on it.
+              </p>
+              <p>
+                <strong>It invalidates the calibration the verifier was released with.</strong> A conformal margin
+                carries its stated coverage only while the rollouts judged later come from the same pool as the
+                held-out set — the requirement called exchangeability. Training a policy against a verifier moves
+                that distribution, and moves it toward the region where the verifier is wrong, so a correction made
+                once expires with the next round of training.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ checklist -->
+      <section id="report" data-nav-section>
+        <div class="wrap">
+          <div class="section-head reveal">
+            <div class="section-kicker"><span class="badge">✓</span> What to Report</div>
+            <h2 class="section-title">Nine metrics that make a verifier claim comparable</h2>
+            <p class="section-subtitle">
+              They split by whether the score is used to select or optimized against. The upper block is largely a
+              matter of reporting what was already measured; the lower block requires running the verifier against
+              a search, which robotics has yet to do.
+            </p>
+          </div>
+
+          <div class="table-scroll reveal">
+            <table class="data">
+              <thead>
+                <tr>
+                  <th scope="col">Report</th>
+                  <th scope="col">How it is computed</th>
+                  <th scope="col">What it settles</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="tag-select">select</span> <strong>Independent rollouts</strong></td>
+                  <td>counted per condition, for every success rate given</td>
+                  <td>the confidence interval can be rebuilt from it</td>
+                </tr>
+                <tr>
+                  <td><span class="tag-select">select</span> <strong>False positive and false negative rate</strong></td>
+                  <td>separately, each with the number of human labels behind it</td>
+                  <td>a false positive trains on a failure; a false negative discards usable data</td>
+                </tr>
+                <tr>
+                  <td><span class="tag-select">select</span> <strong>Rollout type</strong></td>
+                  <td>teleoperated, scripted, or sampled from the policy being judged</td>
+                  <td>a verifier scoring generated rollouts needs its error measured there</td>
+                </tr>
+                <tr>
+                  <td><span class="tag-select">select</span> <strong>Agreement with human judgment</strong></td>
+                  <td>agreement rate, label count, and agreement between two annotators on a double-labelled subset</td>
+                  <td>how far the verifier sits from the labels, and the labels from each other</td>
+                </tr>
+                <tr>
+                  <td><span class="tag-select">select</span> <strong>Calibration</strong></td>
+                  <td>score minus the observed success rate of the rollouts in that score bin</td>
+                  <td>required of any continuous score consumed as a reward</td>
+                </tr>
+                <tr>
+                  <td><span class="tag-select">select</span> <strong>Cross-embodiment transfer</strong></td>
+                  <td>error on a held-out embodiment minus error on the embodiments in training</td>
+                  <td>whether the verifier still works on a new robot</td>
+                </tr>
+                <tr class="hard">
+                  <td><span class="tag-optimize">optimize</span> <strong>Fraction of proxy gain that transfers</strong></td>
+                  <td>Δ<sub>panel</sub> / Δ<sub>proxy</sub>, scoring the first and last checkpoint under the training verifier and under a panel the policy never trained against</td>
+                  <td>separates a real gain from one that only satisfies the training verifier</td>
+                </tr>
+                <tr class="hard">
+                  <td><span class="tag-optimize">optimize</span> <strong>Change in judge error over training</strong></td>
+                  <td>judge error on initial-checkpoint rollouts and on final-checkpoint rollouts, labelled the same way</td>
+                  <td>how much of the verifier's reliability the optimization consumed</td>
+                </tr>
+                <tr class="hard">
+                  <td><span class="tag-optimize">optimize</span> <strong>False positives under search</strong></td>
+                  <td>candidates found by searching the verifier for inputs it wrongly accepts</td>
+                  <td>the region a policy trained on this verifier is driven toward</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p class="boundary-note reveal">
+            <strong>A verifier&rsquo;s error rate depends on the kind of input as much as on the verifier</strong>,
+            so an accuracy reported without naming the input it was measured on omits one of the two things that
+            determine it.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============================================================ papers -->
+      <section id="papers" data-nav-section>
+        <div class="wrap">
+          <div class="section-head reveal">
+            <div class="section-kicker"><span class="badge">≡</span> Reading List</div>
+            <h2 class="section-title">Browse 184 works, each filed exactly once</h2>
+            <p class="section-subtitle">
+              Filed by <strong>what each paper is</strong>, not by the argument the survey cites it for — so a
+              category can be searched without reading the survey first. Every entry carries its bibliography key.
+            </p>
+          </div>
+
+          <div class="catalog-summary">
+            <a class="catalog-card reveal" data-site-catalog="human-verifiers" target="_blank" rel="noopener noreferrer">
+              <strong>15</strong>
+              <span>§2 · Human</span>
+              <small>Preference, scoring, intervention ↗</small>
+            </a>
+            <a class="catalog-card reveal" data-site-catalog="rule-based-and-formal-verifiers" target="_blank" rel="noopener noreferrer">
+              <strong>43</strong>
+              <span>§3 · Rule-Based &amp; Formal</span>
+              <small>Predicates, temporal logic, certificates ↗</small>
+            </a>
+            <a class="catalog-card reveal" data-site-catalog="learned-and-pretrained-verifiers" target="_blank" rel="noopener noreferrer">
+              <strong>55</strong>
+              <span>§4 · Learned &amp; Pretrained</span>
+              <small>Reward models, success detectors, rankers ↗</small>
+            </a>
+            <a class="catalog-card reveal" data-site-catalog="model-intrinsic-verifiers" target="_blank" rel="noopener noreferrer">
+              <strong>25</strong>
+              <span>§5 · Model-Intrinsic</span>
+              <small>Uncertainty, disagreement, reachability ↗</small>
+            </a>
+            <a class="catalog-card reveal" data-site-catalog="verifier-benchmarks" target="_blank" rel="noopener noreferrer">
+              <strong>6</strong>
+              <span>Verifier benchmarks</span>
+              <small>Resources that take the verifier as the system under test ↗</small>
+            </a>
+            <a class="catalog-card reveal" data-site-catalog="policy-evaluation-methodology" target="_blank" rel="noopener noreferrer">
+              <strong>9</strong>
+              <span>Evaluation methodology</span>
+              <small>How many rollouts, and what to report ↗</small>
+            </a>
+            <a class="catalog-card reveal" data-site-catalog="evaluation-platforms" target="_blank" rel="noopener noreferrer">
+              <strong>6</strong>
+              <span>Evaluation platforms</span>
+              <small>Where a policy ranking is produced ↗</small>
+            </a>
+            <a class="catalog-card reveal" data-site-catalog="reward-hacking" target="_blank" rel="noopener noreferrer">
+              <strong>11</strong>
+              <span>Reward hacking</span>
+              <small>What a score does under optimization ↗</small>
+            </a>
+            <a class="catalog-card reveal" data-site-catalog="conformal-calibration" target="_blank" rel="noopener noreferrer">
+              <strong>4</strong>
+              <span>Conformal calibration</span>
+              <small>Distribution-free guarantees under shift ↗</small>
+            </a>
+            <a class="catalog-card reveal" data-site-catalog="subjects" target="_blank" rel="noopener noreferrer">
+              <strong>10</strong>
+              <span>Policies &amp; simulators</span>
+              <small>The things a verifier is pointed at ↗</small>
+            </a>
+          </div>
+
+          <div class="catalog-action reveal">
+            <a
+              class="button primary"
+              data-site-link="repoUrl"
+              data-site-link-suffix="#contents"
+              data-pending="Catalog · pending repository URL"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span class="button-label">Open the complete paper catalog</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 5h5v5M10 14 19 5M19 14v5H5V5h5"></path>
+              </svg>
+            </a>
+            <p>The repository README stays the single source of truth for paper records and official links.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ about -->
+      <section class="band" id="about" data-nav-section>
+        <div class="wrap">
+          <div class="section-head reveal">
+            <div class="section-kicker"><span class="badge">”</span> About</div>
+            <h2 class="section-title">Cite, contribute, and keep the catalog checkable</h2>
+            <p class="section-subtitle">
+              A paper belongs here if it produces or validates a verification signal for robot policies. File it
+              once, in the section where its construction is treated.
+            </p>
+          </div>
+
+          <div class="about-grid">
+            <article class="about-card reveal">
+              <h3>Contributing</h3>
+              <p>
+                Open an issue or a pull request with a canonical paper URL and the judge source it belongs to. Include
+                code or project links only when they are official. If a
+                record here is filed under the wrong construction, say so — the assignment reflects our reading
+                rather than authors' self-descriptions.
+              </p>
+              <p>
+                Original text and figures in the repository are released under the MIT License. Linked papers,
+                repositories, project pages, names, and third-party metadata retain their own terms.
+              </p>
+              <ul class="contact-list" id="contact-list" aria-label="Contact email addresses"></ul>
+            </article>
+
+            <aside class="citation-box reveal">
+              <span class="citation-label" id="citation-status">Preprint in preparation</span>
+              <h3>Citing this survey</h3>
+              <p>If this list or the survey is useful to your work, please cite it using the entry below.</p>
+              <div class="bibtex-head"><span class="bibtex-title">BibTeX</span></div>
+              <pre class="citation-code" id="bibtex-source"></pre>
+              <div class="citation-actions">
+                <button class="button" type="button" id="copy-bibtex">Copy BibTeX</button>
+                <button class="button" type="button" id="copy-repo">Copy Repo URL</button>
+                <a
+                  class="button"
+                  data-site-link="repoUrl"
+                  data-site-link-suffix="/blob/main/CONTRIBUTING.md"
+                  data-pending="Contribution guide · pending"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span class="button-label">Contribution guide</span>
+                </a>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <img class="footer-mark" src="assets/verifier.svg" alt="" aria-hidden="true">
+        <p><strong>Awesome Robot Verifier</strong></p>
+        <p>A static companion site for <em>No Free Checker</em> and its curated reading list.</p>
+        <div class="footer-links">
+          <a href="#top">Back to top</a>
+          <a data-site-link="repoUrl" data-pending="GitHub">GitHub</a>
+          <a data-site-link="repoUrl" data-site-link-suffix="/blob/main/LICENSE" data-pending="MIT License">MIT License</a>
+          <a data-site-link="repoUrl" data-site-link-suffix="/issues" data-pending="Issues">Issues</a>
+        </div>
+      </div>
+    </footer>
+
+    <button class="back-to-top" type="button" aria-label="Back to top" title="Back to top">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <path d="m6 14 6-6 6 6"></path>
+      </svg>
+    </button>
+
+    <div class="figure-lightbox" aria-hidden="true">
+      <div
+        class="figure-lightbox-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="figure-lightbox-title"
+        aria-describedby="figure-lightbox-caption"
+      >
+        <h2 class="sr-only" id="figure-lightbox-title">Expanded research figure</h2>
+        <button class="figure-lightbox-close" type="button" aria-label="Close expanded figure" title="Close (Esc)">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m6 6 12 12M18 6 6 18"></path>
+          </svg>
+        </button>
+        <img class="figure-lightbox-image" src="" alt="">
+        <p class="figure-lightbox-caption" id="figure-lightbox-caption"></p>
+      </div>
+    </div>
+
+    <script>
+(function () {
+  "use strict";
+
+  /* =================================================================
+     1. SITE CONFIG — resolve every declared value, wire up what is
+        present, and visibly degrade whatever is not.
+     ================================================================= */
+
+  const PAPER_TITLE = "No Free Checker: A Survey of Verifiers for Robot Policies";
+  const PAPER_AUTHORS = [
+    "Yang Wan", "Xihang Yue", "Zhirui Liu", "Ziyuan Chu", "Shuxun Wang",
+    "Yuhan Chen", "Xiaonan Jiang", "Xukun Zhu", "Yubo Dong", "Linchao Zhu"
+  ];
+
+  function raw(key) {
+    const v = (typeof SITE === "object" && SITE) ? SITE[key] : undefined;
+    if (Array.isArray(v)) return v;
+    return typeof v === "string" ? v.trim() : "";
+  }
+
+  // A few fields can be derived from another one.
+  function resolve(key) {
+    if (key === "arxivUrl") {
+      return raw("arxivUrl") || (raw("arxivId") ? "https://arxiv.org/abs/" + raw("arxivId") : "");
+    }
+    if (key === "venue") {
+      return raw("venue") || (raw("arxivId") ? "arXiv preprint arXiv:" + raw("arxivId") : "");
+    }
+    return raw(key);
+  }
+
+  function isEmpty(key) {
+    const v = resolve(key);
+    return Array.isArray(v) ? v.length === 0 : !v;
+  }
+
+  function join(base, suffix) {
+    if (!suffix) return base;
+    if (suffix.startsWith("#") || suffix.startsWith("/")) return base.replace(/\/+$/, "") + suffix;
+    return base.replace(/\/+$/, "") + "/" + suffix;
+  }
+
+  function disable(el, pendingText) {
+    el.removeAttribute("href");
+    el.removeAttribute("target");
+    el.setAttribute("aria-disabled", "true");
+    el.classList.add("is-disabled");
+    if (pendingText) {
+      const label = el.querySelector(".button-label, .nav-github-label");
+      if (label) label.textContent = pendingText;
+      else if (!el.querySelector("svg")) el.textContent = pendingText;
+      el.setAttribute("title", "Not published yet — set this in the SITE config at the top of index.html");
+    }
+  }
+
+  function applyLinks() {
+    document.querySelectorAll("[data-site-link]").forEach((el) => {
+      const base = resolve(el.dataset.siteLink);
+      const suffix = el.dataset.siteLinkSuffix || "";
+      if (base) {
+        el.href = join(base, suffix);
+        el.classList.remove("is-disabled");
+        el.removeAttribute("aria-disabled");
+      } else {
+        disable(el, el.dataset.pending);
+      }
+    });
+
+    const repo = resolve("repoUrl");
+    document.querySelectorAll("[data-site-catalog]").forEach((el) => {
+      if (repo) {
+        el.href = repo.replace(/\/+$/, "") + "#" + el.dataset.siteCatalog;
+      } else {
+        el.removeAttribute("href");
+        el.removeAttribute("target");
+        el.setAttribute("aria-disabled", "true");
+        el.classList.add("is-disabled");
+        const small = el.querySelector("small");
+        if (small) small.textContent = small.textContent.replace(/\s*↗\s*$/, "");
+        el.setAttribute("title", "Set SITE.repoUrl to link this section of the catalog");
+      }
+    });
+  }
+
+  function applyAuthors() {
+    const links = (typeof SITE === "object" && SITE && SITE.authorLinks) || {};
+    document.querySelectorAll("[data-author]").forEach((el) => {
+      const url = (links[el.dataset.author] || "").trim();
+      if (!url) return;
+      const strong = el.querySelector("strong");
+      if (!strong) return;
+      const a = document.createElement("a");
+      a.href = url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.appendChild(strong.cloneNode(true));
+      strong.replaceWith(a);
+    });
+  }
+
+  function applyContacts() {
+    const list = document.getElementById("contact-list");
+    if (!list) return;
+    const emails = resolve("contactEmails");
+    list.innerHTML = "";
+    if (!emails.length) {
+      const li = document.createElement("li");
+      li.className = "contact-empty";
+      li.textContent = "Contact addresses will be listed here once the preprint is public.";
+      list.appendChild(li);
+      return;
+    }
+    emails.forEach((address) => {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = "mailto:" + address;
+      a.innerHTML =
+        '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+        '<path d="M4 5h16v14H4zM4 7l8 6 8-6"></path></svg>';
+      a.appendChild(document.createTextNode(address));
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+  }
+
+  const SOCIAL_ICONS = {
+    x: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117Z"></path></svg>',
+    xhs: '<span aria-hidden="true">小红书</span>',
+    bilibili: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3l3 3h6l3-3 1.5 1.5L18 6.9h1A4 4 0 0 1 23 11v6a4 4 0 0 1-4 4H5a4 4 0 0 1-4-4v-6a4 4 0 0 1 4-4h1L4.5 4.5Z"></path></svg>',
+    zhihu: '<span aria-hidden="true">知乎</span>'
+  };
+
+  function applySocials() {
+    const box = document.getElementById("hero-socials");
+    if (!box) return;
+    const items = resolve("socials");
+    box.innerHTML = "";
+    if (!Array.isArray(items) || !items.length) return;
+    items.forEach((item) => {
+      if (!item || !item.url) return;
+      const a = document.createElement("a");
+      a.className = "social-link";
+      a.href = item.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      const icon = SOCIAL_ICONS[item.kind] || "";
+      a.innerHTML = icon;
+      a.appendChild(document.createTextNode(item.label || item.kind || "Post"));
+      box.appendChild(a);
+    });
+  }
+
+  function bibtexYear() {
+    const date = resolve("publicationDate");
+    const match = date.match(/(\d{4})/);
+    return match ? match[1] : "2026";
+  }
+
+  // Keep the BibTeX block readable: three names per line, aligned under the brace.
+  function wrapAuthors(names) {
+    const lines = [];
+    for (let i = 0; i < names.length; i += 3) lines.push(names.slice(i, i + 3).join(" and "));
+    return lines.join(" and\n             ");
+  }
+
+  function bibtexText() {
+    const lines = [
+      "@article{" + (raw("bibKey") || "wan2026nofreechecker") + ",",
+      "  title   = {" + PAPER_TITLE + "},",
+      "  author  = {" + wrapAuthors(PAPER_AUTHORS) + "},"
+    ];
+    if (resolve("venue")) lines.push("  journal = {" + resolve("venue") + "},");
+    if (raw("arxivId")) {
+      lines.push("  eprint  = {" + raw("arxivId") + "},");
+      lines.push("  archivePrefix = {arXiv},");
+    }
+    const url = resolve("arxivUrl") || resolve("openReviewUrl") || resolve("siteUrl");
+    if (url) lines.push("  url     = {" + url + "},");
+    lines.push("  year    = {" + bibtexYear() + "}");
+    lines.push("}");
+    return lines.join("\n");
+  }
+
+  function applyCitation() {
+    const pre = document.getElementById("bibtex-source");
+    if (!pre) return;
+    const text = bibtexText();
+    const escaped = text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/^(\s{2})([a-zA-Z]+)(\s*=)/gm, '$1<span class="accent">$2</span>$3')
+      .replace(/^(@article\{)([^,]+)/m, '$1<span class="accent">$2</span>');
+    pre.innerHTML = escaped;
+    pre.dataset.plain = text;
+
+    const status = document.getElementById("citation-status");
+    if (status) {
+      if (resolve("arxivUrl")) status.textContent = "Preprint available";
+      else if (resolve("paperPdfUrl")) status.textContent = "PDF available";
+      else status.textContent = "Preprint in preparation";
+    }
+  }
+
+  function setMeta(attr, name, content) {
+    if (!content) return;
+    let el = document.head.querySelector("meta[" + attr + '="' + name + '"]');
+    if (!el) {
+      el = document.createElement("meta");
+      el.setAttribute(attr, name);
+      document.head.appendChild(el);
+    }
+    el.setAttribute("content", content);
+  }
+
+  function applyMeta() {
+    const site = resolve("siteUrl");
+    const pdf = resolve("paperPdfUrl");
+    const image = raw("ogImage") || "assets/teaser.png";
+    const absolute = (path) =>
+      !path ? "" : /^https?:/i.test(path) ? path : site ? join(site, path) : "";
+
+    if (site) {
+      let canonical = document.head.querySelector('link[rel="canonical"]');
+      if (!canonical) {
+        canonical = document.createElement("link");
+        canonical.rel = "canonical";
+        document.head.appendChild(canonical);
+      }
+      canonical.href = site;
+      setMeta("property", "og:url", site);
+      setMeta("name", "citation_abstract_html_url", site);
+    }
+    setMeta("property", "og:image", absolute(image));
+    setMeta("name", "twitter:image", absolute(image));
+    setMeta("name", "citation_pdf_url", absolute(pdf));
+    setMeta("name", "citation_arxiv_id", raw("arxivId"));
+    setMeta("name", "citation_journal_title", resolve("venue"));
+    setMeta("name", "citation_publication_date", resolve("publicationDate"));
+    setMeta("name", "citation_online_date", resolve("publicationDate"));
+  }
+
+  function applySetupNotice() {
+    const box = document.getElementById("setup-notice");
+    if (!box) return;
+    const wanted = (typeof SITE_REQUIRED !== "undefined" && SITE_REQUIRED) || [];
+    const missing = wanted.filter(([key]) => isEmpty(key));
+    if (SITE.showSetupNotice === false || !missing.length) return;
+
+    const items = missing
+      .map(([key, unlocks]) => "<li><code>SITE." + key + "</code> — " + unlocks + "</li>")
+      .join("");
+    box.innerHTML =
+      '<div class="setup-notice-inner">' +
+      "<div><strong>" + missing.length + " field" + (missing.length === 1 ? "" : "s") +
+      " still to fill in.</strong> Everything below renders without them; these unlock links and metadata." +
+      "<ul>" + items + "</ul>" +
+      "Edit the <code>SITE</code> object at the top of <code>index.html</code>, or set " +
+      "<code>showSetupNotice: false</code> to hide this.</div>" +
+      '<button class="setup-notice-close" type="button">Dismiss</button>' +
+      "</div>";
+    box.hidden = false;
+    const close = box.querySelector(".setup-notice-close");
+    if (close) close.addEventListener("click", () => { box.hidden = true; });
+  }
+
+  function applySiteConfig() {
+    applyLinks();
+    applyAuthors();
+    applyContacts();
+    applySocials();
+    applyCitation();
+    applyMeta();
+    applySetupNotice();
+  }
+
+  applySiteConfig();
+
+  /* =================================================================
+     2. Page behaviour
+     ================================================================= */
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* --- mobile menu --- */
+  const navToggle = document.querySelector(".nav-toggle");
+  const navLinks = document.getElementById("nav-links");
+
+  function setMenu(open) {
+    if (!navToggle || !navLinks) return;
+    navLinks.classList.toggle("open", open);
+    navToggle.setAttribute("aria-expanded", String(open));
+    navToggle.setAttribute("aria-label", open ? "Close navigation menu" : "Open navigation menu");
+    document.body.classList.toggle("menu-open", open);
+  }
+
+  if (navToggle) {
+    navToggle.addEventListener("click", () => setMenu(!navLinks.classList.contains("open")));
+    navLinks.addEventListener("click", (event) => {
+      if (event.target.closest("a")) setMenu(false);
+    });
+  }
+
+  /* --- the hero frontier: try to reach the corner, fail, fall back --- */
+  const frontier = document.querySelector(".title-frontier");
+  const heroTitle = document.querySelector("[data-frontier]");
+  if (frontier && heroTitle && !reduceMotion) {
+    let busy = false;
+    const attempt = () => {
+      if (busy) return;
+      busy = true;
+      frontier.classList.add("is-trying");
+      window.setTimeout(() => {
+        frontier.classList.remove("is-trying");
+        busy = false;
+      }, 1500);
+    };
+    heroTitle.addEventListener("click", attempt);
+    heroTitle.addEventListener("mouseenter", attempt);
+  }
+
+  /* --- reveal on scroll --- */
+  const revealItems = document.querySelectorAll(".reveal");
+  if (reduceMotion || !("IntersectionObserver" in window)) {
+    revealItems.forEach((el) => el.classList.add("in"));
+  } else {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
+    );
+    revealItems.forEach((el) => observer.observe(el));
+  }
+
+  /* --- active nav link, reading progress, back-to-top --- */
+  const navAnchors = [...document.querySelectorAll(".nav-links a[href^='#']")];
+  const trackedSections = [...document.querySelectorAll("[data-nav-section][id]")];
+  const progressBar = document.querySelector(".reading-progress-bar");
+  const progress = document.querySelector(".reading-progress");
+  const backToTop = document.querySelector(".back-to-top");
+
+  function updateActiveNavigation() {
+    const marker = window.scrollY + Math.min(window.innerHeight * 0.42, 330);
+    let activeId = trackedSections.length ? trackedSections[0].id : "";
+    trackedSections.forEach((section) => {
+      if (section.offsetTop <= marker) activeId = section.id;
+    });
+    navAnchors.forEach((anchor) => {
+      anchor.classList.toggle("active", anchor.getAttribute("href") === "#" + activeId);
+    });
+  }
+
+  function updateLongPageControls() {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const range = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+    const percent = Math.min(Math.max((scrollTop / range) * 100, 0), 100);
+    if (progressBar) progressBar.style.width = percent + "%";
+    if (progress) progress.setAttribute("aria-valuenow", String(Math.round(percent)));
+    if (backToTop) backToTop.classList.toggle("visible", scrollTop > 620);
+  }
+
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(() => {
+      updateActiveNavigation();
+      updateLongPageControls();
+      ticking = false;
+    });
+  }
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+  onScroll();
+
+  if (backToTop) {
+    backToTop.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+    });
+  }
+
+  /* --- counters --- */
+  function countUp(element) {
+    const target = Number(element.dataset.count);
+    if (!Number.isFinite(target)) return;
+    if (reduceMotion) {
+      element.textContent = String(target);
+      return;
+    }
+    const start = performance.now();
+    const tick = (now) => {
+      const t = Math.min((now - start) / 900, 1);
+      element.textContent = String(Math.round(target * (1 - Math.pow(1 - t, 3))));
+      if (t < 1) window.requestAnimationFrame(tick);
+    };
+    window.requestAnimationFrame(tick);
+  }
+
+  const counters = document.querySelectorAll("[data-count]");
+  if ("IntersectionObserver" in window) {
+    const counterObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            countUp(entry.target);
+            counterObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+    counters.forEach((el) => counterObserver.observe(el));
+  } else {
+    counters.forEach(countUp);
+  }
+
+  /* --- copy buttons --- */
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    return new Promise((resolve, reject) => {
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.setAttribute("readonly", "");
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.appendChild(area);
+      area.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(area);
+      ok ? resolve() : reject(new Error("copy failed"));
+    });
+  }
+
+  function bindCopy(id, defaultLabel, getText) {
+    const button = document.getElementById(id);
+    if (!button) return;
+    const text = getText();
+    if (!text) {
+      button.disabled = true;
+      button.classList.add("is-disabled");
+      button.textContent = defaultLabel + " · unavailable";
+      button.title = "Set the matching field in the SITE config at the top of index.html";
+      return;
+    }
+    button.addEventListener("click", () => {
+      copyText(text).then(
+        () => {
+          button.textContent = "Copied";
+          window.setTimeout(() => { button.textContent = defaultLabel; }, 1600);
+        },
+        () => {
+          button.textContent = "Copy failed";
+          window.setTimeout(() => { button.textContent = defaultLabel; }, 1600);
+        }
+      );
+    });
+  }
+
+  bindCopy("copy-bibtex", "Copy BibTeX", () => {
+    const pre = document.getElementById("bibtex-source");
+    return pre ? pre.dataset.plain || "" : "";
+  });
+  bindCopy("copy-repo", "Copy Repo URL", () => resolve("repoUrl"));
+
+  /* --- figure lightbox --- */
+  const lightbox = document.querySelector(".figure-lightbox");
+  const dialog = lightbox && lightbox.querySelector(".figure-lightbox-dialog");
+  const lightboxImage = lightbox && lightbox.querySelector(".figure-lightbox-image");
+  const lightboxCaption = lightbox && lightbox.querySelector(".figure-lightbox-caption");
+  const lightboxClose = lightbox && lightbox.querySelector(".figure-lightbox-close");
+  let lastFocused = null;
+
+  function openFigure(figure) {
+    const img = figure.querySelector("img");
+    if (!img || !lightbox) return;
+    lastFocused = document.activeElement;
+    lightboxImage.src = img.currentSrc || img.src;
+    lightboxImage.alt = img.alt || "";
+    const caption = figure.querySelector("figcaption");
+    lightboxCaption.textContent = caption ? caption.textContent.replace(/\s+/g, " ").trim() : "";
+    lightbox.classList.add("open");
+    lightbox.setAttribute("aria-hidden", "false");
+    document.body.classList.add("lightbox-open");
+    if (lightboxClose) lightboxClose.focus();
+  }
+
+  function closeFigure() {
+    if (!lightbox) return;
+    lightbox.classList.remove("open");
+    lightbox.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("lightbox-open");
+    lightboxImage.src = "";
+    if (lastFocused && lastFocused.focus) lastFocused.focus();
+  }
+
+  document.querySelectorAll("figure.figure").forEach((figure, index) => {
+    const img = figure.querySelector("img");
+    if (!img) return;
+    const caption = figure.querySelector("figcaption");
+    if (caption) {
+      const hint = document.createElement("span");
+      hint.className = "figure-hint";
+      hint.textContent = "Click to enlarge";
+      caption.appendChild(document.createTextNode(" "));
+      caption.appendChild(hint);
+    }
+    img.setAttribute("role", "button");
+    img.setAttribute("tabindex", "0");
+    img.setAttribute("aria-label", "Enlarge figure " + (index + 1));
+    img.addEventListener("click", () => openFigure(figure));
+    img.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openFigure(figure);
+      }
+    });
+  });
+
+  if (lightbox) {
+    lightbox.addEventListener("click", (event) => {
+      if (!dialog.contains(event.target)) closeFigure();
+    });
+    if (lightboxClose) lightboxClose.addEventListener("click", closeFigure);
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && lightbox.classList.contains("open")) closeFigure();
+    });
+  }
+})();
+    </script>
+  </body>
+</html>
