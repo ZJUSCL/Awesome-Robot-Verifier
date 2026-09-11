@@ -97,7 +97,8 @@ link (those fall back to a Google Scholar title search), and any key cited by
 the manuscript but missing from `refs.bib`. A paper with no `url`, `doi`, or
 arXiv identifier in its bib entry gets its identifier from
 `tools/arxiv_ids.json`; add a line there rather than leaving a Scholar fallback
-in the list.
+in the list. A paper with no arXiv version at all takes its DOI from
+`tools/dois.json` instead.
 
 Note that the script reads only what the manuscript actually typesets: `%`
 comments and `\iffalse ... \fi` blocks are stripped before citations are

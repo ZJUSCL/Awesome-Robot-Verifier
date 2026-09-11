@@ -1376,7 +1376,7 @@ table.data td strong { color: var(--ink); }
 
         <p class="hero-subtitle">
           Vision-language-action policies and robot world models are scaling fast, and verification of training
-          data and model behaviour is scaling with them. A curated reading list of <strong>184 works</strong> on
+          data and model behaviour is scaling with them. A curated reading list of <strong>199 works</strong> on
           the mechanisms that supply those verification signals — grouped by
           <strong>who supplies the judgment</strong>, and read along two properties:
           <strong>availability</strong> and <strong>credibility</strong>.
@@ -1433,7 +1433,7 @@ table.data td strong { color: var(--ink); }
 
         <div class="hero-stats" aria-label="Collection statistics">
           <div class="hero-stat">
-            <strong data-count="184">184</strong>
+            <strong data-count="199">199</strong>
             <span>works cataloged</span>
             <small>every one filed exactly once</small>
           </div>
@@ -1709,8 +1709,8 @@ table.data td strong { color: var(--ink); }
           <figure class="figure reveal" style="margin-top: 32px">
             <img
               src="assets/timeline.png"
-              width="1386"
-              height="703"
+              width="2009"
+              height="1011"
               loading="lazy"
               alt="Representative verifier systems plotted by judge source and publication year from 2020 to 2026"
             >
@@ -1757,8 +1757,8 @@ table.data td strong { color: var(--ink); }
           <figure class="figure reveal" style="margin-top: 26px">
             <img
               src="assets/property.png"
-              width="1349"
-              height="779"
+              width="2079"
+              height="1500"
               loading="lazy"
               alt="A table of what a score asserts, plotted against the judge source that supplies the criterion"
             >
@@ -1806,8 +1806,8 @@ table.data td strong { color: var(--ink); }
             <figure class="figure reveal">
               <img
                 src="assets/human.png"
-                width="1800"
-                height="1078"
+                width="3016"
+                height="1500"
                 loading="lazy"
                 alt="Four roles of the human verifier: comparing trajectories, scoring them, intervening during execution, and validating generated rollouts"
               >
@@ -1856,21 +1856,22 @@ table.data td strong { color: var(--ink); }
               available. <strong>Credibility:</strong> strong and sometimes formal guarantees — but only when
               the predefined criteria, state estimates, and dynamics assumptions accurately represent the task.
             </p>
-            <span class="level-total"><strong>43</strong> cataloged works</span>
+            <span class="level-total"><strong>56</strong> cataloged works</span>
           </div>
           <div class="level-layout reverse">
             <figure class="figure reveal">
               <img
                 src="assets/rules.png"
-                width="1536"
-                height="1024"
+                width="1844"
+                height="1500"
                 loading="lazy"
                 alt="Rule-based verifier taxonomy grouped by input type: full trajectory, terminal state, and system model"
               >
               <figcaption class="figure-caption">
                 <strong>Figure 5.</strong> Grouped by what the criterion reads. Temporal-logic scoring, geometric
                 checks, and model-written rules read a full trajectory; a goal predicate reads only the terminal
-                state; invariance certificates and symbolic feasibility checks run over a model of the physics.
+                state; invariance certificates, reachability checks on each candidate trajectory, and symbolic feasibility
+                checks run over a model of the physics.
               </figcaption>
             </figure>
             <div>
@@ -1902,6 +1903,10 @@ table.data td strong { color: var(--ink); }
                 <article class="method-card reveal">
                   <h4>Control barrier functions and safety filters <span class="count-chip">5</span></h4>
                   <p>An invariance certificate proving the robot stays inside a safe set, for every trajectory the dynamics can produce. The theorem applies to the exact value function; a network approximating it carries the guarantee only with a separate verification step.</p>
+                </article>
+                <article class="method-card reveal">
+                  <h4>Reachability-based trajectory checks and safety layers <span class="count-chip">13</span></h4>
+                  <p>Whether the robot can reach an obstacle while tracking one candidate trajectory, from reachable states computed ahead of time. The same check guards a policy's actions while it trains.</p>
                 </article>
                 <article class="method-card reveal">
                   <h4>Symbolic feasibility and task-and-motion planning <span class="count-chip">2</span></h4>
@@ -1995,7 +2000,7 @@ table.data td strong { color: var(--ink); }
               properties of the model itself rather than task performance directly, so their relation to actual
               task success is indirect.
             </p>
-            <span class="level-total"><strong>25</strong> cataloged works</span>
+            <span class="level-total"><strong>27</strong> cataloged works</span>
           </div>
           <div class="level-layout reverse">
             <figure class="figure reveal">
@@ -2031,7 +2036,7 @@ table.data td strong { color: var(--ink); }
                   <p>An imagined rollout is scored down where the learned dynamics model disagrees with itself about it.</p>
                 </article>
                 <article class="method-card reveal">
-                  <h4>Reachability values and latent safety filters <span class="count-chip">7</span></h4>
+                  <h4>Reachability values and latent safety filters <span class="count-chip">9</span></h4>
                   <p>Whether failure can still be avoided from here, computed over a world model's predicted dynamics rather than over how familiar the action looks.</p>
                 </article>
                 <article class="method-card reveal">
@@ -2139,7 +2144,7 @@ table.data td strong { color: var(--ink); }
             <p class="section-subtitle">
               They split by whether the score is used to select or optimized against. The upper block is largely a
               matter of reporting what was already measured; the lower block requires running the verifier against
-              a search, which robotics has yet to do.
+              a search, which robotics has yet to do for a learned verifier.
             </p>
           </div>
 
@@ -2215,7 +2220,7 @@ table.data td strong { color: var(--ink); }
         <div class="wrap">
           <div class="section-head reveal">
             <div class="section-kicker"><span class="badge">≡</span> Reading List</div>
-            <h2 class="section-title">Browse 184 works, each filed exactly once</h2>
+            <h2 class="section-title">Browse 199 works, each filed exactly once</h2>
             <p class="section-subtitle">
               Filed by <strong>what each paper is</strong>, not by the argument the survey cites it for — so a
               category can be searched without reading the survey first. Every entry carries its bibliography key.
@@ -2229,9 +2234,9 @@ table.data td strong { color: var(--ink); }
               <small>Preference, scoring, intervention ↗</small>
             </a>
             <a class="catalog-card reveal" data-site-catalog="rule-based-and-formal-verifiers" target="_blank" rel="noopener noreferrer">
-              <strong>43</strong>
+              <strong>56</strong>
               <span>§3 · Rule-Based &amp; Formal</span>
-              <small>Predicates, temporal logic, certificates ↗</small>
+              <small>Predicates, temporal logic, certificates, reachability ↗</small>
             </a>
             <a class="catalog-card reveal" data-site-catalog="learned-and-pretrained-verifiers" target="_blank" rel="noopener noreferrer">
               <strong>55</strong>
@@ -2239,7 +2244,7 @@ table.data td strong { color: var(--ink); }
               <small>Reward models, success detectors, rankers ↗</small>
             </a>
             <a class="catalog-card reveal" data-site-catalog="model-intrinsic-verifiers" target="_blank" rel="noopener noreferrer">
-              <strong>25</strong>
+              <strong>27</strong>
               <span>§5 · Model-Intrinsic</span>
               <small>Uncertainty, disagreement, reachability ↗</small>
             </a>

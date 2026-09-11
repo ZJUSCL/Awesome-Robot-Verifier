@@ -41,7 +41,7 @@
   - [Scalar and per-timestep annotation](#human.scalar-and-per-timestep-annotation) `1`
   - [Human-in-the-loop intervention](#human.human-in-the-loop-intervention) `8`
   - [Human validation of generated rollouts](#human.human-validation-of-generated-rollouts) `2`
-- [§3 Rule-based and formal verifiers](#rule-based-and-formal-verifiers) `43`
+- [§3 Rule-based and formal verifiers](#rule-based-and-formal-verifiers) `56`
   - [Temporal-logic specifications and satisfaction margins](#rules.temporal-logic-specifications-and-satisfaction-margins) `7`
   - [Trajectory-geometry scoring](#rules.trajectory-geometry-scoring) `1`
   - [LLM-written reward and monitor code](#rules.llm-written-reward-and-monitor-code) `7`
@@ -49,6 +49,7 @@
   - [Predicate-filtered demonstration generation](#rules.predicate-filtered-demonstration-generation) `6`
   - [Sparse binary reward for policy training](#rules.sparse-binary-reward-for-policy-training) `4`
   - [Control barrier functions and safety filters](#rules.control-barrier-functions-and-safety-filters) `5`
+  - [Reachability-based trajectory checks and safety layers](#rules.reachability-based-trajectory-checks-and-safety-layers) `13`
   - [Symbolic feasibility and task-and-motion planning](#rules.symbolic-feasibility-and-task-and-motion-planning) `2`
 - [§4 Learned and pretrained verifiers](#learned-and-pretrained-verifiers) `55`
   - [Dense and process-level reward models](#scorers.dense-and-process-level-reward-models) `15`
@@ -58,12 +59,12 @@
   - [Learned reward for policy optimization](#scorers.learned-reward-for-policy-optimization) `9`
   - [Self-improvement and rollout filtering](#scorers.self-improvement-and-rollout-filtering) `5`
   - [Data curation and demonstration scoring](#scorers.data-curation-and-demonstration-scoring) `9`
-- [§5 Model-intrinsic verifiers](#model-intrinsic-verifiers) `25`
+- [§5 Model-intrinsic verifiers](#model-intrinsic-verifiers) `27`
   - [Runtime failure detection and gating](#intrinsic.runtime-failure-detection-and-gating) `7`
   - [Action selection from policy self-consistency](#intrinsic.action-selection-from-policy-self-consistency) `2`
   - [Generative likelihood and latent discrepancy](#intrinsic.generative-likelihood-and-latent-discrepancy) `3`
   - [Model uncertainty and ensemble disagreement](#intrinsic.model-uncertainty-and-ensemble-disagreement) `4`
-  - [Reachability values and latent safety filters](#intrinsic.reachability-values-and-latent-safety-filters) `7`
+  - [Reachability values and latent safety filters](#intrinsic.reachability-values-and-latent-safety-filters) `9`
   - [Task and environment selection](#intrinsic.task-and-environment-selection) `2`
 
 **Part II — validating a verifier, and what it is pointed at**
@@ -111,7 +112,7 @@ The four judge sources of Part I differ along two properties, and the survey's w
 
 # Part I — verifier methods, by who supplies the judgment
 
-`138` papers across the four judge sources, following §2 to §5 of the survey.
+`153` papers across the four judge sources, following §2 to §5 of the survey.
 
 <div id="human-verifiers"></div>
 
@@ -213,10 +214,10 @@ The four judge sources of Part I differ along two properties, and the survey's w
 - **`ICCV 2025`** [VLABench: A Large-Scale Benchmark for Language-Conditioned Robotics Manipulation with Long-Horizon Reasoning Tasks](https://arxiv.org/abs/2412.18194). *Zhang et al.* `VLABench`
 - **`arXiv 2024`** [BEHAVIOR-1K: A Human-Centered, Embodied AI Benchmark with 1,000 Everyday Activities and Realistic Simulation](https://arxiv.org/abs/2403.09227). *Li et al.* `BEHAVIOR-1K`
 - **`arXiv 2024`** [ManiSkill3: GPU Parallelized Robotics Simulation and Rendering for Generalizable Embodied AI](https://arxiv.org/abs/2410.00425). *Tao et al.* `ManiSkill`
-- **`RSS 2024`** [RoboCasa: Large-Scale Simulation of Household Tasks for Generalist Robots](https://arxiv.org/abs/2406.02523). *Nasiriany et al.* `RoboCasa`
+- **`RSS 2024`** [RoboCasa: Large-Scale Simulation of Everyday Tasks for Generalist Robots](https://arxiv.org/abs/2406.02523). *Nasiriany et al.* `RoboCasa`
 - **`RSS 2024`** [THE COLOSSEUM: A Benchmark for Evaluating Generalization for Robotic Manipulation](https://arxiv.org/abs/2402.08191). *Pumacay et al.* `pumacay2024colosseum`
 - **`NeurIPS D&B 2023`** [LIBERO: Benchmarking Knowledge Transfer for Lifelong Robot Learning](https://arxiv.org/abs/2306.03310). *Liu et al.* `LIBERO`
-- **`ICRA 2022`** [CALVIN: A Benchmark for Language-Conditioned Policy Learning for Long-Horizon Robot Manipulation Tasks](https://arxiv.org/abs/2112.03227). *Mees et al.* `CALVIN`
+- **`RA-L 2022`** [CALVIN: A Benchmark for Language-Conditioned Policy Learning for Long-Horizon Robot Manipulation Tasks](https://arxiv.org/abs/2112.03227). *Mees et al.* `CALVIN`
 
 <div id="rules.predicate-filtered-demonstration-generation"></div>
 
@@ -247,6 +248,24 @@ The four judge sources of Part I differ along two properties, and the survey's w
 - **`arXiv 2023`** [Value Functions are Control Barrier Functions: Verification of Safe Policies using Control Theory](https://arxiv.org/abs/2306.04026). *Tan et al.* `ValueIsCBF`
 - **`Automatica 2021`** [A Predictive Safety Filter for Learning-Based Control of Constrained Nonlinear Dynamical Systems](https://doi.org/10.1016/j.automatica.2021.109597). *Wabersich et al.* `wabersich2021psf`
 - **`ECC 2019`** [Control Barrier Functions: Theory and Applications](https://doi.org/10.23919/ECC.2019.8796030). *Ames et al.* `ames2019cbf`
+
+<div id="rules.reachability-based-trajectory-checks-and-safety-layers"></div>
+
+### Reachability-based trajectory checks and safety layers
+
+- **`T-RO 2025`** [Can't Touch This: Real-Time, Safe Motion Planning and Control for Manipulators Under Uncertainty](https://arxiv.org/abs/2301.13308). *Michaux et al.* `ARMOUR`
+- **`ICRA 2025`** [Guaranteed Reach-Avoid for Black-Box Systems through Narrow Gaps via Neural Network Reachability](https://arxiv.org/abs/2409.13195). *Chung et al.* `NeuralPARC`
+- **`NeurIPS 2024`** [Excluding the Irrelevant: Focusing Reinforcement Learning through Continuous Action Masking](https://arxiv.org/abs/2406.03704). *Stolz et al.* `ActionMasking`
+- **`RSS 2024`** [Goal-Reaching Trajectory Design Near Danger with Piecewise Affine Reach-Avoid Computation](https://doi.org/10.15607/RSS.2024.XX.117). *Chung et al.* `PARC`
+- **`T-RO 2024`** [REFINE: Reachability-Based Trajectory Design Using Robust Feedback Linearization and Zonotopes](https://arxiv.org/abs/2211.11997). *Liu et al.* `REFINE`
+- **`ICRA 2022`** [Provably Safe Deep Reinforcement Learning for Robotic Manipulation in Human Environments](https://arxiv.org/abs/2205.06311). *Thumm et al.* `ThummSafeRL`
+- **`WAFR 2022`** [Safe Output Feedback Motion Planning from Images via Learned Perception Modules and Contraction Theory](https://arxiv.org/abs/2206.06553). *Chou et al.* `ChouWAFR`
+- **`RA-L 2022`** [Safe Reinforcement Learning Using Black-Box Reachability Analysis](https://arxiv.org/abs/2204.07417). *Selim et al.* `BRSL`
+- **`ICRA 2022`** [SaRA: A Tool for Safe Human-Robot Coexistence and Collaboration through Reachability Analysis](https://doi.org/10.1109/ICRA46639.2022.9811952). *Schepp et al.* `SaRA`
+- **`T-RO 2021`** [Fail-Safe Motion Planning for Online Verification of Autonomous Vehicles Using Convex Optimization](https://doi.org/10.1109/TRO.2020.3036624). *Pek et al.* `PekFailSafe`
+- **`RA-L 2021`** [Reachability-Based Trajectory Safeguard (RTS): A Safe and Fast Reinforcement Learning Safety Layer for Continuous Control](https://arxiv.org/abs/2011.08421). *Shao et al.* `RTS`
+- **`IJRR 2020`** [Bridging the Gap between Safety and Real-Time Performance in Receding-Horizon Trajectory Design for Mobile Robots](https://arxiv.org/abs/1809.06746). *Kousik et al.* `RTD`
+- **`IROS 2014`** [Formal Verification of Maneuver Automata for Parameterized Motion Primitives](https://doi.org/10.1109/IROS.2014.6942751). *Hess et al.* `HessManeuver`
 
 <div id="rules.symbolic-feasibility-and-task-and-motion-planning"></div>
 
@@ -327,7 +346,7 @@ The four judge sources of Part I differ along two properties, and the survey's w
 - **`arXiv 2026`** [EVA: Aligning Video World Models with Executable Robot Actions via Inverse Dynamics Rewards](https://arxiv.org/abs/2603.17808). *Wang et al.* `wang2026eva`
 - **`CVPR 2026`** [SRPO: Self-Referential Policy Optimization for Vision-Language-Action Models](https://arxiv.org/abs/2511.15605). *Fei et al.* `SRPO`
 - **`arXiv 2026`** [World Value Models for Robotic Manipulation](https://arxiv.org/abs/2606.24742). *Wang et al.* `wang2026wvm`
-- **`ICLR 2025`** [GRAPE: Generalizing Robot Policy via Preference Alignment](https://arxiv.org/abs/2411.19309). *Zhang et al.* `GRAPE`
+- **`ICLR Workshop 2025`** [GRAPE: Generalizing Robot Policy via Preference Alignment](https://arxiv.org/abs/2411.19309). *Zhang et al.* `GRAPE`
 - **`arXiv 2025`** [VLA-RFT: Vision-Language-Action Reinforcement Fine-tuning with Verified Rewards in World Simulators](https://arxiv.org/abs/2510.00406). *Li et al.* `VLA-RFT`
 - **`arXiv 2025`** [VLA-RL: Towards Masterful and General Robotic Manipulation with Scalable Reinforcement Learning](https://arxiv.org/abs/2505.18719). *Lu et al.* `VLA-RL`
 - **`arXiv 2025`** [π*0.6: a VLA That Learns From Experience](https://arxiv.org/abs/2511.14759). *Intelligence et al.* `RECAP`
@@ -415,8 +434,10 @@ The four judge sources of Part I differ along two properties, and the survey's w
 - **`L4DC 2026`** [How to Train Your Latent Control Barrier Function: Smooth Safety Filtering Under Hard-to-Model Constraints](https://arxiv.org/abs/2511.18606). *Nakamura et al.* `nakamura2025latentcbf`
 - **`CoRL 2025`** [Gameplay Filters: Robust Zero-Shot Safety through Adversarial Imagination](https://arxiv.org/abs/2405.00846). *Nguyen et al.* `GameplayFilters`
 - **`RSS 2025`** [Generalizing Safety Beyond Collision-Avoidance via Latent-Space Reachability Analysis](https://arxiv.org/abs/2502.00935). *Nakamura et al.* `LatentSafetyFilters`
-- **`arXiv 2025`** [How Well Do Latent World Models Understand Partially Observable Safety Constraints?](https://arxiv.org/abs/2510.06492). *Kim et al.* `LatentSafetyPO`
+- **`CDC 2025`** [Latent Representations for Control Design with Provable Stability and Safety Guarantees](https://arxiv.org/abs/2505.23210). *Lutkus et al.* `LatentCertificates`
 - **`CoRL 2025`** [Uncertainty-aware Latent Safety Filters for Avoiding Out-of-Distribution Failures](https://arxiv.org/abs/2505.00779). *Seo et al.* `seo2025uncertainty`
+- **`arXiv 2025`** [What You Don't Know Can Hurt You: How Well do Latent Safety Filters Understand Partially Observable Safety Constraints?](https://arxiv.org/abs/2510.06492). *Kim et al.* `LatentSafetyPO`
+- **`CoRL 2022`** [LS3: Latent Space Safe Sets for Long-Horizon Visuomotor Control of Sparse Reward Iterative Tasks](https://arxiv.org/abs/2107.04775). *Wilcox et al.* `LS3`
 - **`CDC 2017`** [Hamilton-Jacobi Reachability: A Brief Overview and Recent Advances](https://doi.org/10.1109/CDC.2017.8263977). *Bansal et al.* `bansal2017hj`
 
 <div id="intrinsic.task-and-environment-selection"></div>
@@ -457,7 +478,7 @@ The four judge sources of Part I differ along two properties, and the survey's w
 
 <div id="evalmethod.all"></div>
 
-- **`Science Robotics 2026`** [A Careful Examination of Large Behavior Models for Multitask Dexterous Manipulation](https://arxiv.org/abs/2507.05331). *Barreiros et al.* `LBM`
+- **`Science Robotics 2026`** [A Careful Examination of Large Behavior Models for Multitask Dexterous Manipulation](https://arxiv.org/abs/2507.05331). *TRI LBM Team et al.* `LBM`
 - **`RSS 2026`** [Beyond Binary Success: Sample-Efficient and Statistically Rigorous Robot Policy Comparison](https://arxiv.org/abs/2603.13616). *Snyder et al.* `N-SCORE`
 - **`arXiv 2026`** [PhAIL: A Real-Robot VLA Benchmark and Distributional Methodology](https://arxiv.org/abs/2605.29710). *Arkhangelskiy* `PhAIL`
 - **`CoRL 2025`** [Efficient Evaluation of Multi-Task Robot Policies With Active Experiment Selection](https://arxiv.org/abs/2502.09829). *Anwar et al.* `ActiveEval`
@@ -503,7 +524,7 @@ The four judge sources of Part I differ along two properties, and the survey's w
 - **`ICML 2026`** [VLAW: Iterative Co-Improvement of Vision-Language-Action Policy and World Model](https://arxiv.org/abs/2602.12063). *Guo et al.* `guo2026vlaw`
 - **`NeurIPS 2024`** [InfoRM: Mitigating Reward Hacking in RLHF via Information-Theoretic Reward Modeling](https://arxiv.org/abs/2402.09345). *Miao et al.* `InfoRM`
 - **`ICML 2023`** [Scaling Laws for Reward Model Overoptimization](https://arxiv.org/abs/2210.10760). *Gao et al.* `RMOveroptimization`
-- **`NeurIPS 2022`** [Defining and Characterizing Reward Gaming](https://arxiv.org/abs/2209.13085). *Skalse et al.* `Unhackability`
+- **`NeurIPS 2022`** [Defining and Characterizing Reward Hacking](https://arxiv.org/abs/2209.13085). *Skalse et al.* `Unhackability`
 - **`arXiv 2018`** [Categorizing Variants of Goodhart's Law](https://arxiv.org/abs/1803.04585). *Manheim et al.* `GoodhartTaxonomy`
 
 ---
@@ -533,7 +554,7 @@ The four judge sources of Part I differ along two properties, and the survey's w
 
 ### Generalist policies and corpora
 
-- **`arXiv 2026`** [π0.7: a Steerable Generalist Robotic Foundation Model with Emergent Capabilities](https://arxiv.org/abs/2604.15483). *Intelligence et al.* `pi07_2026`
+- **`arXiv 2026`** [π0.7: a Steerable Generalist Robotic Foundation Model with Emergent Capabilities](https://arxiv.org/abs/2604.15483). *Physical Intelligence et al.* `pi07_2026`
 - **`CoRL 2025`** [π0.5: a Vision-Language-Action Model with Open-World Generalization](https://arxiv.org/abs/2504.16054). *Black et al.* `PI05`
 - **`RSS 2025`** [π0: A Vision-Language-Action Flow Model for General Robot Control](https://doi.org/10.15607/RSS.2025.XXI.010). *Black et al.* `black2025pi0`
 - **`ICRA 2024`** [Open X-Embodiment: Robotic Learning Datasets and RT-X Models](https://arxiv.org/abs/2310.08864). *Collaboration et al.* `OXE`
@@ -547,7 +568,7 @@ The four judge sources of Part I differ along two properties, and the survey's w
 - **`RSS 2026`** [Interactive World Simulator for Robot Policy Training and Evaluation](https://arxiv.org/abs/2603.08546). *Wang et al.* `InteractiveWS`
 - **`arXiv 2026`** [SimuScene: Training and Benchmarking Code Generation to Simulate Physical Scenarios](https://arxiv.org/abs/2602.10840). *Wang et al.* `SimuScene`
 - **`arXiv 2025`** [Cosmos World Foundation Model Platform for Physical AI](https://arxiv.org/abs/2501.03575). *NVIDIA et al.* `Cosmos`
-- **`2025`** [Genie 3: A New Frontier for World Models](https://deepmind.google/discover/blog/genie-3-a-new-frontier-for-world-models/). *DeepMind* `deepmind2025genie3`
+- **`2025`** [Genie 3: A New Frontier for World Models](https://deepmind.google/discover/blog/genie-3-a-new-frontier-for-world-models/). *Google DeepMind* `deepmind2025genie3`
 
 ---
 

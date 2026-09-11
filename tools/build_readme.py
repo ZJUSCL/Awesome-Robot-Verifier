@@ -28,7 +28,8 @@ what the survey actually cites and nothing else.
 
 No network access. Links come from the `url` or `doi` field when present, then
 from an arXiv identifier found in `eprint` or in `journal`/`note`/`pages`, then
-from tools/arxiv_ids.json, and fall back to a Google Scholar title search.
+from tools/arxiv_ids.json, then from tools/dois.json for papers that have no
+arXiv version, and fall back to a Google Scholar title search.
 
 tools/arxiv_ids.json maps a citation key to its arXiv identifier. It exists
 because refs.bib now records the venue a paper was finally published in, which
@@ -99,6 +100,12 @@ def clean(s):
 
 
 def authors_short(a):
+    # A first author written as one braced group ({TRI LBM Team}, {Google
+    # DeepMind}) is an organisation; its last word is not a surname.
+    m = re.match(r"\s*\{([^{}]*)\}\s*(and\b|$)", a)
+    if m:
+        org = clean(m.group(1))
+        return org + (" et al." if m.group(2) else "")
     a = clean(a)
     if not a: return ""
     parts = [p.strip() for p in re.split(r"\s+and\s+", a) if p.strip()]
@@ -115,6 +122,10 @@ def authors_short(a):
 
 ARXIV_IDS = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                         "arxiv_ids.json"), encoding="utf-8"))
+# Papers with no arXiv version at all. refs.bib does not carry their DOI because
+# the survey's bibliography style would print it; the list links it from here.
+DOIS = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   "dois.json"), encoding="utf-8"))
 
 
 def arxiv_id(key, f):
@@ -137,7 +148,8 @@ def link_for(key, f):
     if f.get("url"): return clean(f["url"])
     if f.get("doi"): return "https://doi.org/" + clean(f["doi"])
     aid = arxiv_id(key, f)
-    return "https://arxiv.org/abs/" + aid if aid else ""
+    if aid: return "https://arxiv.org/abs/" + aid
+    return "https://doi.org/" + DOIS[key] if key in DOIS else ""
 
 
 def venue_for(key, f):
@@ -211,6 +223,8 @@ SUBGROUP_LABELS = {
     ("rules", "Sparse reward for reinforcement learning"): "Sparse binary reward for policy training",
     ("rules", "An invariance certificate that holds for every trajectory"):
                                                         "Control barrier functions and safety filters",
+    ("rules", "A reachability check on each candidate trajectory"):
+                                                        "Reachability-based trajectory checks and safety layers",
     ("rules", "A symbolic feasibility check before anything moves"):
                                                         "Symbolic feasibility and task-and-motion planning",
 
@@ -439,6 +453,7 @@ B = {
           "LLM-written reward and monitor code", "Goal predicates in simulation benchmarks",
           "Predicate-filtered demonstration generation", "Sparse binary reward for policy training",
           "Control barrier functions and safety filters",
+          "Reachability-based trajectory checks and safety layers",
           "Symbolic feasibility and task-and-motion planning"]),
  "scorers": dict(head="Learned and pretrained verifiers", anchor="learned-and-pretrained-verifiers", tag="§4",
    desc="A neural model returns the score, either trained on task-specific robot data or queried "
@@ -509,6 +524,7 @@ VENUE_SHORT = [
     ("Transactions on Pattern Analysis",                   "TPAMI"),
     ("Transactions on Neural Networks",                    "TNNLS"),
     ("Transactions on Cyber-Physical Systems",             "ACM TCPS"),
+    ("Transactions on Robotics",                           "T-RO"),
     ("Association for Computational Linguistics",          "ACL"),
     ("International Joint Conference on Artificial Intelligence", "IJCAI"),
     ("European Conference on Artificial Intelligence",     "ECAI"),
@@ -521,6 +537,7 @@ VENUE_SHORT = [
     ("European Control Conference",                        "ECC"),
     ("Conference on Decision and Control",                 "CDC"),
     ("International Conference on Machine Learning",       "ICML"),
+    ("Learning Representations (ICLR) Workshop",           "ICLR Workshop"),
     ("International Conference on Learning Representations", "ICLR"),
     ("Neural Information Processing Systems",              "NeurIPS"),
     ("Conference on Robot Learning",                       "CoRL"),
@@ -530,6 +547,7 @@ VENUE_SHORT = [
 
 
 SITE_URL = "https://zjuscl.github.io/Awesome-Robot-Verifier/"
+ARXIV_URL = "https://arxiv.org/abs/2609.09250"
 CONTACT_EMAIL = "wanyang@zju.edu.cn"
 
 
@@ -576,16 +594,15 @@ def render(REC, SUB, out_path):
     # A plain emoji nav row: each label carries the link, no badge images and no
     # URL set as text.
     w('<p align="center">')
+    w('📄 <a href="%s"><b>arXiv</b></a>&ensp;•&ensp;' % ARXIV_URL)
     w('🌐 <a href="%s"><b>Website</b></a>&ensp;•&ensp;' % SITE_URL)
-    w('🧭 <a href="#how-to-read-an-entry"><b>Taxonomy</b></a>&ensp;•&ensp;')
-    w('🗂️ <a href="#contents"><b>Browse</b></a>&ensp;•&ensp;')
+    w('🗂️ <a href="#contents"><b>Contents</b></a>&ensp;•&ensp;')
     w('🤝 <a href="CONTRIBUTING.md"><b>Contribute</b></a>')
     w('</p>\n')
-    w('  <!-- TODO(links): add an arXiv entry to the row above once the preprint is public. -->\n')
     w("</div>\n")
-    w("🤝 Contributions are welcome: correct a record the manuscript already uses, or add the paper to the "
+    w("> 🤝 Contributions are welcome: correct a record the manuscript already uses, or add the paper to the "
       "manuscript before proposing it here.\n")
-    w("✉️ Contact: %s\n" % CONTACT_EMAIL)
+    w("> ✉️ Contact: %s\n" % CONTACT_EMAIL)
     w('<div align="center">')
     w('<img src="assets/teaser.png" width="94%" alt="Availability against credibility, across the four judge sources">')
     w("<br>")
