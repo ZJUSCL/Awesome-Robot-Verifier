@@ -15,7 +15,7 @@
 
 </div>
 
-> 🤝 Contributions are welcome: correct a record the manuscript already uses, or add the paper to the manuscript before proposing it here.
+> 🤝 Contributions are welcome: correct a record the manuscript already uses, or propose a new one — it can enter the catalog first and be folded into the next revision of the paper.
 
 > ✉️ Contact: wanyang@zju.edu.cn
 
@@ -83,7 +83,7 @@ Also: [Citation](#citation) · [License](#license)
 ### How to read an entry
 
 ```
-- **`arXiv 2026`** [Paper Title](link). *First author et al.* `BibKey`
+- **`arXiv 2026`** [Paper Title](link). *First author et al.* `citekey`
        venue+year                                             citation key in the survey
 ```
 
@@ -577,13 +577,14 @@ The four judge sources of Part I differ along two properties, and the survey's w
 ## 📌 Citation <sub><a href="#toc">↑ contents</a></sub>
 
 ```bibtex
-@article{wan2026nofreechecker,
-  title   = {No Free Checker: A Survey of Verifiers for Robot Policies},
-  author  = {Yang Wan and Xihang Yue and Zhirui Liu and Ziyuan Chu and
-             Shuxun Wang and Yuhan Chen and Xiaonan Jiang and Xukun Zhu and
-             Yubo Dong and Linchao Zhu},
-  journal = {arXiv preprint},   % TODO(citation): real venue and identifier
-  year    = {2026}
+@misc{wan2026freecheckersurveyverifiers,
+      title={No Free Checker: A Survey of Verifiers for Robot Policies},
+      author={Yang Wan and Xihang Yue and Zhirui Liu and Ziyuan Chu and Shuxun Wang and Yuhan Chen and Xiaonan Jiang and Xukun Zhu and Yubo Dong and Linchao Zhu},
+      year={2026},
+      eprint={2609.09250},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO},
+      url={https://arxiv.org/abs/2609.09250},
 }
 ```
 

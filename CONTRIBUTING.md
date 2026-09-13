@@ -2,6 +2,10 @@
 
 Thanks for helping keep this catalog checkable.
 
+An entry does not need to already be cited in the survey. It can enter the
+catalog first, through a pull request, and be folded into the next revision
+of the paper as the survey catches up.
+
 ## What belongs here
 
 A paper belongs in this list if it **produces or validates a verification signal
@@ -11,21 +15,19 @@ returns a score, or that measures how good such a score is.
 That includes reward models, success detectors, runtime monitors, safety
 filters, policy evaluators, and the benchmarks that put those judges on trial.
 It does not include policy architectures, control methods, or datasets that
-carry no verification signal — unless the survey uses the paper as the subject a
-verifier is pointed at, or as the generator that produced the behaviour being
-judged, in which case it goes under **Policies, corpora, and simulators**.
+carry no verification signal.
 
-## Where to file it
+## Placement
 
-Every paper appears **exactly once**, filed by **what the paper is** — never by
-the argument the survey happens to cite it for. If a section heading only makes
-sense to someone who has read the survey, it is the wrong heading, and no paper
-should be filed under one.
+Every entry appears **exactly once**, placed by **what it is** — never by the
+argument the survey happens to cite it for. If a section heading only makes
+sense to someone who has read the survey, it is the wrong heading, and nothing
+should be placed under one.
 
 **Part I** is verifier methods, split by who supplies the judgment. These are
 §2–§5 of the survey:
 
-| If the judgment comes from | File it under |
+| If the judgment comes from | Section |
 | --- | --- |
 | a person, directly | `§2 · Human verifiers` |
 | criteria fixed before any candidate exists — a predicate, a specification, a certificate, or generated code | `§3 · Rule-based and formal verifiers` |
@@ -36,35 +38,29 @@ should be filed under one.
 own error gets measured (§6), and the things a verifier is pointed at. Pick by
 subject:
 
-| If the paper is about | File it under |
+| If the entry is about | Section |
 | --- | --- |
-| measuring how often the verifier itself is wrong | `Benchmarks that take the verifier as the system under test` |
+| measuring how often the verifier itself is wrong, or disclosing that error alongside its main result — a benign false-positive rate next to an attack-success rate, for example | `Benchmarks that take the verifier as the system under test` |
 | how many rollouts a comparison takes, or what to report about it | `Statistical policy comparison and evaluation practice` |
 | a platform a policy ranking is actually produced on, or a correction applied to a proxy ranking | `Real-robot and sim-to-real evaluation platforms` |
 | optimizing against a score, or defending a reward model against it | `Reward hacking and overoptimization` |
 | distribution-free guarantees and the shifts that void them | `Conformal calibration and distribution shift` |
-| a generalist policy, a large corpus, or a generator that produces the behaviour being judged | `Policies, corpora, and simulators` |
+| a policy architecture, a large corpus, or a generator that produces the behaviour being judged, with no verification signal of its own | `Policies, corpora, and simulators` |
 
 ## Opening a pull request
 
-One paper per entry, in the same format as the surrounding lines:
+One entry per pull request, in the same format as the surrounding lines:
 
 ```markdown
-- **`arXiv 2026`** [Paper Title](https://arxiv.org/abs/XXXX.XXXXX). *First Author et al.* `BibKey`
+- **`arXiv 2026`** [Paper Title / Tool Name](paper link or code repo). *First Author et al.* `citekey`. optional one-line description.
 ```
 
-- Use a **canonical** URL: the arXiv abstract page, the DOI, or the proceedings
-  page. Not a PDF mirror, not a Semantic Scholar link.
-- Keep the entries inside a section sorted **newest first**, then alphabetically
-  by title within a year.
-- Add code or project links only when they are **official**.
-- The trailing `` `BibKey` `` matches the citation key in the survey. For a new
-  paper, propose a short CamelCase key based on the system name.
-
-Please also say, in the PR description, **where the behaviour being judged came
-from** — hardware, simulation, a learned world model, or an existing corpus.
-That cuts across all four judge sources, so it is not what this list is filed
-by, and it is the hardest thing to recover from an abstract.
+- Use a **canonical** URL: the arXiv abstract page, the DOI, the proceedings
+  page, or, for a tool, its repository or project page. Not a PDF mirror, not
+  a Semantic Scholar link.
+- Keep the entries inside a section sorted **newest first**, then
+  alphabetically by title within a year.
+- `` `citekey` `` is just the method or system's short, commonly used name.
 
 ## Corrections
 
@@ -73,34 +69,3 @@ construction reflects **our reading** rather than the authors'
 self-descriptions. If a record is filed under the wrong judge source, or a
 guarantee is described more strongly than the paper claims, open an issue and
 say what the paper actually reports.
-
-## Regenerating the catalog
-
-`README.md` is generated by `tools/build_readme.py` from the survey's
-`refs.bib` and its section files — do not hand-edit it, the next build will
-overwrite your change.
-
-```
-python3 tools/build_readme.py
-```
-
-The automatic pass files a paper by the first manuscript section that cites it,
-then groups it by the heading inside that section, at the levels
-`SPLIT_LEVELS` declares. Two tables at the top of the script then correct the
-result: `SUBGROUP_LABELS` renames the manuscript's argument-shaped headings into
-labels that say what the methods in them are, and `OVERRIDES` refiles individual
-papers by subject. Adding a paper means adding it to `refs.bib` and, if the
-automatic pass puts it in the wrong place, one line in `OVERRIDES`.
-
-The build prints the per-bucket counts, any key it could not resolve to a real
-link (those fall back to a Google Scholar title search), and any key cited by
-the manuscript but missing from `refs.bib`. A paper with no `url`, `doi`, or
-arXiv identifier in its bib entry gets its identifier from
-`tools/arxiv_ids.json`; add a line there rather than leaving a Scholar fallback
-in the list. A paper with no arXiv version at all takes its DOI from
-`tools/dois.json` instead.
-
-Note that the script reads only what the manuscript actually typesets: `%`
-comments and `\iffalse ... \fi` blocks are stripped before citations are
-collected, so commenting a paragraph out of the survey removes its papers from
-the list on the next build.

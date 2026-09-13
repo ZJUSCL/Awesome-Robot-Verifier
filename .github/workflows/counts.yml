@@ -1,0 +1,42 @@
+name: Entry counts
+
+on:
+  pull_request:
+    paths:
+      - README.md
+  push:
+    branches: [main]
+    paths:
+      - README.md
+
+jobs:
+  check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python3 tools/update_counts.py --check
+
+  autofix:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python3 tools/update_counts.py
+      - run: |
+          if git diff --quiet README.md; then
+            echo "counts already up to date"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore(readme): recompute entry counts [skip ci]"
+          git push

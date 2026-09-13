@@ -35,7 +35,7 @@
         /* ---- publication metadata (Google Scholar / Highwire tags) ------- */
         venue:            "arXiv preprint arXiv:2609.09250",   // e.g. "arXiv preprint arXiv:2608.01234"
         publicationDate:  "2026/09/08",   // "YYYY/MM/DD"
-        bibKey:           "wan2026nofreechecker",
+        bibKey:           "wan2026freecheckersurveyverifiers",
 
         /* ---- people ------------------------------------------------------ */
         // Homepage per author. Any name left out simply renders as plain text.
@@ -2560,7 +2560,7 @@ table.data td strong { color: var(--ink); }
 
   function bibtexText() {
     const lines = [
-      "@article{" + (raw("bibKey") || "wan2026nofreechecker") + ",",
+      "@article{" + (raw("bibKey") || "wan2026freecheckersurveyverifiers") + ",",
       "  title   = {" + PAPER_TITLE + "},",
       "  author  = {" + wrapAuthors(PAPER_AUTHORS) + "},"
     ];
