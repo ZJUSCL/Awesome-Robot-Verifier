@@ -51,9 +51,9 @@
   - [Control barrier functions and safety filters](#rules.control-barrier-functions-and-safety-filters) `5`
   - [Reachability-based trajectory checks and safety layers](#rules.reachability-based-trajectory-checks-and-safety-layers) `13`
   - [Symbolic feasibility and task-and-motion planning](#rules.symbolic-feasibility-and-task-and-motion-planning) `2`
-- [§4 Learned and pretrained verifiers](#learned-and-pretrained-verifiers) `55`
+- [§4 Learned and pretrained verifiers](#learned-and-pretrained-verifiers) `56`
   - [Dense and process-level reward models](#scorers.dense-and-process-level-reward-models) `15`
-  - [Success detection and trajectory-level judgment](#scorers.success-detection-and-trajectory-level-judgment) `5`
+  - [Success detection and trajectory-level judgment](#scorers.success-detection-and-trajectory-level-judgment) `6`
   - [Inference-time candidate ranking](#scorers.inference-time-candidate-ranking) `8`
   - [World-model lookahead and failure prediction](#scorers.world-model-lookahead-and-failure-prediction) `4`
   - [Learned reward for policy optimization](#scorers.learned-reward-for-policy-optimization) `9`
@@ -112,7 +112,7 @@ The four judge sources of Part I differ along two properties, and the survey's w
 
 # Part I — verifier methods, by who supplies the judgment
 
-`153` papers across the four judge sources, following §2 to §5 of the survey.
+`154` papers across the four judge sources, following §2 to §5 of the survey.
 
 <div id="human-verifiers"></div>
 
@@ -312,6 +312,7 @@ The four judge sources of Part I differ along two properties, and the survey's w
 ### Success detection and trajectory-level judgment
 
 - **`ICLR 2026`** [RobotArena \infty: Scalable Robot Benchmarking via Real-to-Sim Translation](https://arxiv.org/abs/2510.23571). *Jangir et al.* `robotarena_infty2025`
+- **`arXiv 2026`** [Spotter: Let the Embodied Model Lead, and the VLM Reflect for It](https://arxiv.org/abs/2609.36808). *Li et al.* `Spotter`. A pretrained VLM screens each action chunk of a frozen VLA at runtime and a VLM judge confirms failures before triggering a repair; no success signal is used.
 - **`ICLR 2026`** [WorldGym: World Model as An Environment for Policy Evaluation](https://arxiv.org/abs/2506.00613). *Quevedo et al.* `WorldGym`
 - **`CoRL 2025`** [AutoEval: Autonomous Evaluation of Generalist Robot Manipulation Policies in the Real World](https://arxiv.org/abs/2503.24278). *Zhou et al.* `AutoEval`
 - **`arXiv 2025`** [RoboFAC: A Comprehensive Framework for Robotic Failure Analysis and Correction](https://arxiv.org/abs/2505.12224). *Ye et al.* `RoboFAC`
