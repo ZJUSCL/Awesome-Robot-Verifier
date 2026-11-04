@@ -69,7 +69,7 @@
 
 **Part II — validating a verifier, and what it is pointed at**
 
-- [§6.1 Benchmarks that take the verifier as the system under test](#verifier-benchmarks) `6`
+- [§6.1 Benchmarks that take the verifier as the system under test](#verifier-benchmarks) `7`
 - [§6.1 Statistical policy comparison and evaluation practice](#policy-evaluation-methodology) `9`
 - [§6.1 Real-robot and sim-to-real evaluation platforms](#evaluation-platforms) `6`
 - [§6.3 Reward hacking and overoptimization](#reward-hacking) `11`
@@ -452,7 +452,7 @@ The four judge sources of Part I differ along two properties, and the survey's w
 
 # Part II — validating a verifier, and what it is pointed at
 
-`46` papers. The first five groups follow §6, which asks how a verifier's own error is measured. The last is the things a verifier is run on rather than verifiers themselves.
+`47` papers. The first five groups follow §6, which asks how a verifier's own error is measured. The last is the things a verifier is run on rather than verifiers themselves.
 
 <div id="verifier-benchmarks"></div>
 
