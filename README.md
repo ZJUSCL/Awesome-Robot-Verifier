@@ -464,6 +464,7 @@ The four judge sources of Part I differ along two properties, and the survey's w
 
 - **`arXiv 2026`** [GE-Sim 2.0: A Roadmap Towards Comprehensive Closed-loop Video World Simulators for Robotic Manipulation](https://arxiv.org/abs/2605.27491). *Qiu et al.* `GESim2`
 - **`arXiv 2026`** [How Should World Models Be Evaluated for Embodied Decision-Making? A Decision-Making-Centric Position](https://arxiv.org/abs/2606.15032). *Yu et al.* `wmeval_position2026`
+- **`GitHub 2026`** [Provael](https://github.com/provael/provael). *Jain* `Provael`. Reports its keep-out predicate's benign false-positive rate beside every attack-success rate, e.g. 1/50 benign vs 42/50 under roleplay for SmolVLA on LIBERO-Object; simulation only.
 - **`arXiv 2026`** [RoboReward: General-Purpose Vision-Language Reward Models for Robotics](https://arxiv.org/abs/2601.00675). *Lee et al.* `RoboReward`
 - **`arXiv 2026`** [SafeVLA-Bench: A Benchmark for the Success-Safety Gap in Vision-Language-Action Models](https://arxiv.org/abs/2606.00773). *Fan et al.* `SafeVLABench`
 - **`arXiv 2025`** [Can AI Perceive Physical Danger and Intervene?](https://arxiv.org/abs/2509.21651). *Jindal et al.* `ASIMOV`
