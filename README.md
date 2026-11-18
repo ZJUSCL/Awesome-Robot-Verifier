@@ -51,10 +51,10 @@
   - [Control barrier functions and safety filters](#rules.control-barrier-functions-and-safety-filters) `5`
   - [Reachability-based trajectory checks and safety layers](#rules.reachability-based-trajectory-checks-and-safety-layers) `13`
   - [Symbolic feasibility and task-and-motion planning](#rules.symbolic-feasibility-and-task-and-motion-planning) `2`
-- [§4 Learned and pretrained verifiers](#learned-and-pretrained-verifiers) `56`
+- [§4 Learned and pretrained verifiers](#learned-and-pretrained-verifiers) `57`
   - [Dense and process-level reward models](#scorers.dense-and-process-level-reward-models) `15`
   - [Success detection and trajectory-level judgment](#scorers.success-detection-and-trajectory-level-judgment) `6`
-  - [Inference-time candidate ranking](#scorers.inference-time-candidate-ranking) `8`
+  - [Inference-time candidate ranking](#scorers.inference-time-candidate-ranking) `9`
   - [World-model lookahead and failure prediction](#scorers.world-model-lookahead-and-failure-prediction) `4`
   - [Learned reward for policy optimization](#scorers.learned-reward-for-policy-optimization) `9`
   - [Self-improvement and rollout filtering](#scorers.self-improvement-and-rollout-filtering) `5`
@@ -112,7 +112,7 @@ The four judge sources of Part I differ along two properties, and the survey's w
 
 # Part I — verifier methods, by who supplies the judgment
 
-`154` papers across the four judge sources, following §2 to §5 of the survey.
+`155` papers across the four judge sources, following §2 to §5 of the survey.
 
 <div id="human-verifiers"></div>
 
@@ -324,6 +324,7 @@ The four judge sources of Part I differ along two properties, and the survey's w
 
 - **`arXiv 2026`** [E-TTS: A New Embodied Test-Time Scaling Framework for Robotic Manipulation](https://arxiv.org/abs/2606.27268). *Ye et al.* `E-TTS`
 - **`ICML 2026`** [TapSampling: Inference-Time Sampling with a Task-Progress-Understanding Verifier for Robotic Manipulation](https://arxiv.org/abs/2605.25547). *Zhao et al.* `TapSampling`
+- **`CVPR 2026 Findings`** [Think Twice, Act Once: Verifier-Guided Action Selection For Embodied Agents](https://arxiv.org/abs/2605.12620). *Singhi et al.* `VegAS`. Samples several candidate actions from an MLLM embodied policy and picks one with a generative MLLM verifier trained on an LLM-synthesized curriculum of failure cases; the same MLLM used off-the-shelf as a verifier gives no gain.
 - **`arXiv 2026`** [VLA-ATTC: Adaptive Test-Time Compute for VLA Models with Relative Action Critic Model](https://arxiv.org/abs/2605.01194). *Li et al.* `VLA-ATTC`
 - **`CoRL 2025`** [RoboMonkey: Scaling Test-Time Sampling and Verification for Vision-Language-Action Models](https://arxiv.org/abs/2506.17811). *Kwok et al.* `RoboMonkey`
 - **`arXiv 2025`** [RoVer: Robot Reward Model as Test-Time Verifier for Vision-Language-Action Model](https://arxiv.org/abs/2510.10975). *Dai et al.* `RoVer`
